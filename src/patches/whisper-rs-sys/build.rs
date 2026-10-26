@@ -102,12 +102,12 @@ fn main() {
 
     println!("cargo:rerun-if-changed=wrapper.h");
 
-    // Concat: GGML_BACKEND_DL=ON in the environment builds whisper and ggml
+    // VibeCut: GGML_BACKEND_DL=ON in the environment builds whisper and ggml
     // as shared libraries and each CPU backend as a module ggml loads at run
     // time, picking the best one the CPU can run - with
     // GGML_CPU_ALL_VARIANTS=ON, one per x86_64 generation. That is how one
     // bundle runs AVX2 kernels on a Haswell and still starts on a Sandy
-    // Bridge (jub0t/concat#388, #193). The published build script only
+    // Bridge (OscarGallardo35/VibeCut#388, #193). The published build script only
     // builds static libraries, so the switch was not there to turn.
     // Watched, because a library built the other way would link wrong.
     println!("cargo:rerun-if-env-changed=GGML_BACKEND_DL");
@@ -207,7 +207,7 @@ fn main() {
         .very_verbose(true)
         .pic(true);
 
-    // Concat: a module build cannot tune itself to the machine it is built
+    // VibeCut: a module build cannot tune itself to the machine it is built
     // on; ggml refuses the two together. The variants are the tuning.
     // Off said outright otherwise: the forwarding below only passes what
     // the environment holds, and an OUT_DIR configured with them on keeps
@@ -349,7 +349,7 @@ fn main() {
     _ = std::fs::remove_file("bindings/javascript/package.json");
 }
 
-// Concat: the shared build's linking. Only whisper, ggml and ggml-base are
+// VibeCut: the shared build's linking. Only whisper, ggml and ggml-base are
 // linked; every backend, the CPU's variants among them, is a module ggml
 // loads itself and is never linked. The import libraries are in lib/, and
 // on Windows the DLLs in bin/ - cargo puts native search paths inside the
@@ -367,7 +367,7 @@ fn link_shared(destination: &std::path::Path, out: &std::path::Path) {
     copy_runtime(destination, out);
 }
 
-// Concat: every runtime library of the shared build - whisper, ggml,
+// VibeCut: every runtime library of the shared build - whisper, ggml,
 // ggml-base and the backend modules - copied into the profile directory
 // (target/[<triple>/]<profile>/), beside the programs cargo builds there,
 // so a `cargo run` program finds its CPU backends next to itself, where
@@ -412,7 +412,7 @@ fn copy_runtime(destination: &std::path::Path, out: &std::path::Path) {
 }
 
 // The published crate's linking, unchanged, moved out of `main` so the
-// shared build can take its place (Concat).
+// shared build can take its place (VibeCut).
 fn link_static() {
     if cfg!(feature = "intel-sycl") {
         println!("cargo:rustc-link-lib=whisper");

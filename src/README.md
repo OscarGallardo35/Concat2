@@ -1,55 +1,55 @@
-# Concat Engine
+# VibeCut Engine
 
-The video engine behind Concat. Rust, no GC, no hidden control flow.
+The video engine behind VibeCut. Rust, no GC, no hidden control flow.
 
 ## Layout
 
 | Crate | What it is | Dependencies |
 |---|---|---|
-| `concat-core` | Time, arena, frames, timeline model. The vocabulary every other crate speaks. | **none** (std only) |
-| `concat-media` | Getting pixels and samples in and out of files. Links FFmpeg (libav*), and is the only crate that knows it exists. | `concat-core`, ffmpeg-the-third |
-| `concat-project` | The edit itself: document model, operations as commands, undo, concat.json IO. | serde, serde_json |
-| `concat-render` | Turning a timeline plus a timestamp into one finished frame. | `concat-core`, wgpu (optional) |
-| `concat-effects` | Effect packages: manifests, WGSL shaders for pictures and FFmpeg chain templates for sound, the catalogue. Each built-in effect is a folder under `packages/`. | `concat-project`, serde, toml |
-| `concat-export` | Timeline to file: flatten, the frame-by-frame render loop, the paused monitor's true frame. | `concat-core`, `concat-media`, `concat-render`, `concat-project`, `concat-effects` |
-| `concat-api` | The Concat API: JSON requests in, responses and events out. Projects, edits, media, the catalogue, templates, exports as jobs, frames. | `concat-host`, `concat-export`, `concat-effects`, `concat-project` |
-| `concat-server` | The API on a socket: JSON-RPC lines over TCP or a Unix socket, and gRPC behind the `grpc` feature. One dispatcher, many callers. | `concat-api`; tonic and tokio with `grpc` |
-| `concat-cli` | A binary to drive the above: `probe`, `render`, `api` (the API over stdin and stdout) and `serve` (the API on a socket). | `concat-server`, `concat-api`, the engine crates |
-| `concat-host` | What the window needs that is not the edit: sessions, project folders, previews, playback, templates, job slots. | `concat-media`, `concat-project`, `concat-export`, cpal |
-| `concat-speech` | Transcription (whisper.cpp, in-process) and text to speech (Kokoro via sherpa-onnx). | `concat-host`, `concat-media`, whisper-rs, sherpa-onnx |
-| `concat` | The editor window: every pane, dialog and primitive, in Slint. The app a user launches. | slint, `concat-host`, `concat-speech` |
-| `concat-android` | The Android activity: the entry point that hosts the window on a phone. | `concat`, slint |
+| `vibecut-core` | Time, arena, frames, timeline model. The vocabulary every other crate speaks. | **none** (std only) |
+| `vibecut-media` | Getting pixels and samples in and out of files. Links FFmpeg (libav*), and is the only crate that knows it exists. | `vibecut-core`, ffmpeg-the-third |
+| `vibecut-project` | The edit itself: document model, operations as commands, undo, vibecut.json IO. | serde, serde_json |
+| `vibecut-render` | Turning a timeline plus a timestamp into one finished frame. | `vibecut-core`, wgpu (optional) |
+| `vibecut-effects` | Effect packages: manifests, WGSL shaders for pictures and FFmpeg chain templates for sound, the catalogue. Each built-in effect is a folder under `packages/`. | `vibecut-project`, serde, toml |
+| `vibecut-export` | Timeline to file: flatten, the frame-by-frame render loop, the paused monitor's true frame. | `vibecut-core`, `vibecut-media`, `vibecut-render`, `vibecut-project`, `vibecut-effects` |
+| `vibecut-api` | The VibeCut API: JSON requests in, responses and events out. Projects, edits, media, the catalogue, templates, exports as jobs, frames. | `vibecut-host`, `vibecut-export`, `vibecut-effects`, `vibecut-project` |
+| `vibecut-server` | The API on a socket: JSON-RPC lines over TCP or a Unix socket, and gRPC behind the `grpc` feature. One dispatcher, many callers. | `vibecut-api`; tonic and tokio with `grpc` |
+| `vibecut-cli` | A binary to drive the above: `probe`, `render`, `api` (the API over stdin and stdout) and `serve` (the API on a socket). | `vibecut-server`, `vibecut-api`, the engine crates |
+| `vibecut-host` | What the window needs that is not the edit: sessions, project folders, previews, playback, templates, job slots. | `vibecut-media`, `vibecut-project`, `vibecut-export`, cpal |
+| `vibecut-speech` | Transcription (whisper.cpp, in-process) and text to speech (Kokoro via sherpa-onnx). | `vibecut-host`, `vibecut-media`, whisper-rs, sherpa-onnx |
+| `vibecut` | The editor window: every pane, dialog and primitive, in Slint. The app a user launches. | slint, `vibecut-host`, `vibecut-speech` |
+| `vibecut-android` | The Android activity: the entry point that hosts the window on a phone. | `vibecut`, slint |
 
 The dependency arrows point one way:
 
 ```
-concat -> concat-speech -> concat-host -> {export, project, media} -> core
+vibecut -> vibecut-speech -> vibecut-host -> {export, project, media} -> core
                                        -> render -> core
                                           export -> effects -> project
-concat-cli -> concat-server -> concat-api -> concat-host
+vibecut-cli -> vibecut-server -> vibecut-api -> vibecut-host
 ```
 
 If you ever find yourself wanting `core` to depend on `media`, something has
 been put in the wrong crate.
 
-`concat` is the app. It opens project folders through `concat-host`, reads
+`vibecut` is the app. It opens project folders through `vibecut-host`, reads
 the engine's project to draw the bin and the lanes, and writes every edit as
-a `concat-project` command.
+a `vibecut-project` command.
 
 ## Build and run
 
 ```sh
 cargo build
 cargo test
-cargo run -p concat-cli -- probe some-video.mp4
-cargo run -p concat-cli -- render some-video.mp4 out.mp4 --frames 120
-cargo run -p concat-cli -- api '{"method":"catalogue.list","kind":"filter"}'
-cargo run -p concat-cli -- api < edits.jsonl   # one JSON-RPC call per line; see below
-cargo run -p concat-cli -- serve               # the same API on 127.0.0.1:7420
-cargo run -p concat-cli --features grpc -- serve --grpc 127.0.0.1:7421
-cargo run -p concat                    # the editor window, debug
-cargo run --profile quick -p concat    # optimised, rebuilds in seconds: for trying changes
-cargo build --profile app -p concat    # the shipping binary: fat LTO, panic=abort, stripped
+cargo run -p vibecut-cli -- probe some-video.mp4
+cargo run -p vibecut-cli -- render some-video.mp4 out.mp4 --frames 120
+cargo run -p vibecut-cli -- api '{"method":"catalogue.list","kind":"filter"}'
+cargo run -p vibecut-cli -- api < edits.jsonl   # one JSON-RPC call per line; see below
+cargo run -p vibecut-cli -- serve               # the same API on 127.0.0.1:7420
+cargo run -p vibecut-cli --features grpc -- serve --grpc 127.0.0.1:7421
+cargo run -p vibecut                    # the editor window, debug
+cargo run --profile quick -p vibecut    # optimised, rebuilds in seconds: for trying changes
+cargo build --profile app -p vibecut    # the shipping binary: fat LTO, panic=abort, stripped
 ```
 
 Nothing is spawned at run time: FFmpeg is linked, whisper.cpp and sherpa-onnx
@@ -63,7 +63,7 @@ On Linux, Skia needs the fontconfig and freetype headers at build time (see
 `.github/workflows/build-app.yml` for the package list).
 
 On Nix, the flake at the repository root builds the window with every native
-dependency pinned: `nix build` (then `./result/bin/concat`), `nix run`, or
+dependency pinned: `nix build` (then `./result/bin/vibecut`), `nix run`, or
 `nix develop` for a shell with the toolchain and libraries in it. Linux
 x86_64 and aarch64.
 
@@ -85,34 +85,34 @@ scripts leave their output under `vendor/`, outside `target/`, and
 scripts/ffmpeg-mobile.sh aarch64-linux-android
 scripts/sherpa-mobile.sh aarch64-linux-android
 eval "$(scripts/mobile-env.sh aarch64-linux-android)"
-cargo ndk -t arm64-v8a --platform 26 build -p concat-android   # the activity's .so
-cargo apk build --release -p concat-android                     # the APK, signed with
+cargo ndk -t arm64-v8a --platform 26 build -p vibecut-android   # the activity's .so
+cargo apk build --release -p vibecut-android                     # the APK, signed with
                                                                 # CARGO_APK_RELEASE_KEYSTORE
 
 # iOS: Xcode.
 scripts/ffmpeg-mobile.sh aarch64-apple-ios
 scripts/sherpa-mobile.sh aarch64-apple-ios
 eval "$(scripts/mobile-env.sh aarch64-apple-ios)"
-cargo build --release -p concat --target aarch64-apple-ios
-scripts/ios-app.sh aarch64-apple-ios release                    # Concat.app
+cargo build --release -p vibecut --target aarch64-apple-ios
+scripts/ios-app.sh aarch64-apple-ios release                    # VibeCut.app
 ```
 
 `.github/workflows/mobile.yml` runs exactly this on every pull request
-and on a release tag, and keeps the FFmpeg builds cached. The window is one library: `concat` on the
-desktop and on iOS runs it from `main.rs`, `concat-android` from the
-activity's `android_main`, and `crates/concat/src/platform.rs` is where
+and on a release tag, and keeps the FFmpeg builds cached. The window is one library: `vibecut` on the
+desktop and on iOS runs it from `main.rs`, `vibecut-android` from the
+activity's `android_main`, and `crates/vibecut/src/platform.rs` is where
 the three differ - how the backend is chosen, how files are picked, and
 whether there is a title strip to drag.
 
-## Driving Concat without the window
+## Driving VibeCut without the window
 
 The full reference - every method, every edit command, every type, and a
 page per transport - lives on the website at
-[concatenate.pages.dev/docs](https://concatenate.pages.dev/docs). What follows
+[github.com/OscarGallardo35/VibeCut/docs](https://github.com/OscarGallardo35/VibeCut/docs). What follows
 is the short version.
 
-Everything the window does to a project, a script can do through the Concat
-API: `concat-api` is the one dispatcher, and the transports only carry it.
+Everything the window does to a project, a script can do through the VibeCut
+API: `vibecut-api` is the one dispatcher, and the transports only carry it.
 On a line - stdin, TCP, a Unix socket - a call is JSON-RPC 2.0, one object
 per line, and the response comes back with the call's id:
 
@@ -127,7 +127,7 @@ per line, and the response comes back with the call's id:
 {"jsonrpc":"2.0","method":"export.done","params":{"job":"j1","path":"/edits/Reel","output":"/edits/reel.mp4","width":1920,"height":1080}}
 ```
 
-An `edit.apply` carries a `concat-project` command as it is, so every edit
+An `edit.apply` carries a `vibecut-project` command as it is, so every edit
 the window can make is one a caller can make, with the same refusals. An
 error is `{"code": -32001, "message": "...", "data": {"code": "notOpen"}}`:
 the number is JSON-RPC's, the name in `data` is the API's - `parse`,
@@ -135,14 +135,14 @@ the number is JSON-RPC's, the name in `data` is the API's - `parse`,
 `unauthorized`. Exports are jobs: the response names one at once and its
 events follow, to every connected caller, each naming its job and project.
 
-`concat-cli serve` puts the same lines on a socket. It binds loopback unless
+`vibecut-cli serve` puts the same lines on a socket. It binds loopback unless
 told otherwise, and every connection, loopback included, presents a token
 as its first line, `{"jsonrpc":"2.0","id":0,"method":"auth","params":{"token":"..."}}`:
-the one given with `--token` (or `CONCAT_API_TOKEN`), or else one minted
+the one given with `--token` (or `VIBECUT_API_TOKEN`), or else one minted
 at start and printed under the addresses, so only whoever started the
 server can hand it out. There is no encryption; a bind off loopback belongs
 behind something that has it. With the `grpc` feature the same API is
-served over HTTP/2 from `crates/concat-server/proto/concat.proto`, a thin
+served over HTTP/2 from `crates/vibecut-server/proto/vibecut.proto`, a thin
 envelope carrying the same JSON, with the token as `authorization: Bearer
 ...` metadata. `version` is the call to make first: its reply's
 `capabilities` names what the build serves (`events`, `json-rpc`,
@@ -156,8 +156,8 @@ envelope carrying the same JSON, with the token as `authorization: Bearer
 
 ## Conventions
 
-- **Time is exact.** All timestamps are `concat_core::time::Rational` seconds, never `f64`.
+- **Time is exact.** All timestamps are `vibecut_core::time::Rational` seconds, never `f64`.
   Frame-accurate editing and floating point do not mix.
-- **Graphs use handles, not pointers.** `concat_core::arena` explains why.
+- **Graphs use handles, not pointers.** `vibecut_core::arena` explains why.
 - **Shallow generics.** Concrete types until three call sites demand otherwise.
 - **Threads, not async.** The render path is CPU-bound; `async` buys nothing here.

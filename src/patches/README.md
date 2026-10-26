@@ -7,8 +7,8 @@ the change, and read it again.
 
 ## i-slint-renderer-skia 1.18.1
 
-Text on a 1x Windows screen read soft and grey (jub0t/concat#278). Three
-changes, all marked `Concat:` in the source:
+Text on a 1x Windows screen read soft and grey (OscarGallardo35/VibeCut#278). Three
+changes, all marked `VibeCut:` in the source:
 
 - `itemrenderer.rs`, `draw_glyph_run`: glyphs are positioned on whole
   pixels when the window's scale factor is under 1.5. Slint always asks
@@ -44,20 +44,20 @@ Nothing else differs from the published crate.
 whisper.cpp's Rust build. The published build script builds whisper and
 ggml as static libraries only, so ggml's CPU kernels are compiled for one
 instruction set: AVX2 crashed Sandy and Ivy Bridge machines at launch
-(jub0t/concat#193), and AVX alone made transcription some eight times
-slower everywhere else (#388). One change, marked `Concat:` in `build.rs`:
+(OscarGallardo35/VibeCut#193), and AVX alone made transcription some eight times
+slower everywhere else (#388). One change, marked `VibeCut:` in `build.rs`:
 
 - `GGML_BACKEND_DL=ON` in the environment builds whisper, ggml and
   ggml-base as shared libraries and every backend as a module ggml loads
   at run time, links the three libraries rather than the static archives,
   and copies the runtime files into the profile directory for `cargo run`.
   With `GGML_CPU_ALL_VARIANTS=ON` the CPU backend is one module per x86_64
-  generation, and ggml loads the best one the CPU can run; concat-speech's
+  generation, and ggml loads the best one the CPU can run; vibecut-speech's
   `cpu_backend` tells it where to look. build-app.yml turns both on for the
   x86_64 Windows and Linux bundles. Unset, the build is the published one.
 
 And the copy is smaller than the published crate: ggml's GPU backends that
-no build of Concat compiles (CANN, CUDA, Hexagon, HIP, MUSA, OpenCL, RPC,
+no build of VibeCut compiles (CANN, CUDA, Hexagon, HIP, MUSA, OpenCL, RPC,
 SYCL, Vulkan, WebGPU, zDNN, ZenDNN) are left out of
 `whisper.cpp/ggml/src`, so the crate's `cuda`, `hipblas`, `vulkan` and
 `intel-sycl` features no longer build. CMake only enters a backend's folder

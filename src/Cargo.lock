@@ -1224,275 +1224,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "concat"
-version = "0.2.8"
-dependencies = [
- "block2 0.6.2",
- "concat-api",
- "concat-core",
- "concat-effects",
- "concat-export",
- "concat-host",
- "concat-mcp",
- "concat-media",
- "concat-project",
- "concat-server",
- "concat-speech",
- "concat-text",
- "concat-vision",
- "dirs",
- "image",
- "libc",
- "log",
- "objc2 0.6.4",
- "objc2-foundation 0.3.2",
- "opener",
- "pollster",
- "rfd",
- "serde",
- "serde_json",
- "slint",
- "slint-build",
- "toml",
- "wayland-backend",
- "wayland-client",
- "wgpu",
- "winresource",
-]
-
-[[package]]
-name = "concat-android"
-version = "0.2.8"
-dependencies = [
- "android-build",
- "android_logger",
- "concat",
- "jni 0.22.4",
- "libc",
- "log",
- "slint",
-]
-
-[[package]]
-name = "concat-api"
-version = "0.2.8"
-dependencies = [
- "base64 0.22.1",
- "concat-core",
- "concat-effects",
- "concat-export",
- "concat-host",
- "concat-project",
- "png 0.17.16",
- "schemars",
- "serde",
- "serde_json",
- "tempfile",
-]
-
-[[package]]
-name = "concat-cli"
-version = "0.2.8"
-dependencies = [
- "clap",
- "concat-api",
- "concat-core",
- "concat-effects",
- "concat-host",
- "concat-media",
- "concat-render",
- "concat-server",
- "serde_json",
-]
-
-[[package]]
-name = "concat-core"
-version = "0.2.8"
-
-[[package]]
-name = "concat-effects"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "concat-project",
- "naga",
- "serde",
- "thiserror 2.0.20",
- "toml",
-]
-
-[[package]]
-name = "concat-export"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "concat-effects",
- "concat-media",
- "concat-project",
- "concat-render",
- "concat-vision",
- "log",
- "serde",
-]
-
-[[package]]
-name = "concat-host"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "concat-effects",
- "concat-export",
- "concat-media",
- "concat-project",
- "concat-render",
- "concat-text",
- "concat-vision",
- "cpal",
- "libc",
- "log",
- "memmap2",
- "png 0.17.16",
- "rustls",
- "rustls-native-certs",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "ureq 2.12.1",
- "webpki-roots 0.26.11",
- "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "concat-mcp"
-version = "0.2.8"
-dependencies = [
- "concat-api",
- "concat-server",
- "serde_json",
- "tempfile",
-]
-
-[[package]]
-name = "concat-media"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "ffmpeg-the-third",
- "libc",
- "log",
- "resvg",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "concat-mobile"
-version = "0.2.8"
-dependencies = [
- "android_logger",
- "concat-core",
- "concat-export",
- "concat-host",
- "concat-media",
- "concat-project",
- "jni-sys 0.3.1",
- "log",
- "ndk 0.9.0",
- "ndk-context",
- "ndk-sys 0.6.0+11769913",
- "pollster",
- "raw-window-handle",
- "thiserror 2.0.20",
- "uniffi",
- "wgpu",
-]
-
-[[package]]
-name = "concat-project"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "schemars",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "concat-render"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "concat-effects",
- "concat-vision",
- "half",
- "log",
- "pollster",
- "wgpu",
-]
-
-[[package]]
-name = "concat-server"
-version = "0.2.8"
-dependencies = [
- "concat-api",
- "getrandom 0.3.4",
- "prost",
- "protox",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-stream",
- "tonic",
- "tonic-prost",
- "tonic-prost-build",
-]
-
-[[package]]
-name = "concat-speech"
-version = "0.2.8"
-dependencies = [
- "bzip2 0.6.1",
- "concat-host",
- "concat-media",
- "concat-vision",
- "log",
- "ort",
- "serde",
- "serde_json",
- "sherpa-onnx",
- "tar",
- "tokenizers",
- "ureq 2.12.1",
- "whisper-rs",
-]
-
-[[package]]
-name = "concat-text"
-version = "0.2.8"
-dependencies = [
- "fontdb 0.23.0",
- "memmap2",
- "rustybuzz",
- "tiny-skia 0.12.0",
- "ttf-parser",
- "unicode-bidi",
- "unicode-linebreak",
- "unicode-script",
-]
-
-[[package]]
-name = "concat-vision"
-version = "0.2.8"
-dependencies = [
- "concat-core",
- "concat-project",
- "ort",
- "png 0.17.16",
-]
-
-[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7546,6 +7277,275 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "vibecut"
+version = "0.2.8"
+dependencies = [
+ "block2 0.6.2",
+ "dirs",
+ "image",
+ "libc",
+ "log",
+ "objc2 0.6.4",
+ "objc2-foundation 0.3.2",
+ "opener",
+ "pollster",
+ "rfd",
+ "serde",
+ "serde_json",
+ "slint",
+ "slint-build",
+ "toml",
+ "vibecut-api",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-export",
+ "vibecut-host",
+ "vibecut-mcp",
+ "vibecut-media",
+ "vibecut-project",
+ "vibecut-server",
+ "vibecut-speech",
+ "vibecut-text",
+ "vibecut-vision",
+ "wayland-backend",
+ "wayland-client",
+ "wgpu",
+ "winresource",
+]
+
+[[package]]
+name = "vibecut-android"
+version = "0.2.8"
+dependencies = [
+ "android-build",
+ "android_logger",
+ "jni 0.22.4",
+ "libc",
+ "log",
+ "slint",
+ "vibecut",
+]
+
+[[package]]
+name = "vibecut-api"
+version = "0.2.8"
+dependencies = [
+ "base64 0.22.1",
+ "png 0.17.16",
+ "schemars",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-export",
+ "vibecut-host",
+ "vibecut-project",
+]
+
+[[package]]
+name = "vibecut-cli"
+version = "0.2.8"
+dependencies = [
+ "clap",
+ "serde_json",
+ "vibecut-api",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-host",
+ "vibecut-media",
+ "vibecut-render",
+ "vibecut-server",
+]
+
+[[package]]
+name = "vibecut-core"
+version = "0.2.8"
+
+[[package]]
+name = "vibecut-effects"
+version = "0.2.8"
+dependencies = [
+ "naga",
+ "serde",
+ "thiserror 2.0.20",
+ "toml",
+ "vibecut-core",
+ "vibecut-project",
+]
+
+[[package]]
+name = "vibecut-export"
+version = "0.2.8"
+dependencies = [
+ "log",
+ "serde",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-media",
+ "vibecut-project",
+ "vibecut-render",
+ "vibecut-vision",
+]
+
+[[package]]
+name = "vibecut-host"
+version = "0.2.8"
+dependencies = [
+ "cpal",
+ "libc",
+ "log",
+ "memmap2",
+ "png 0.17.16",
+ "rustls",
+ "rustls-native-certs",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "ureq 2.12.1",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-export",
+ "vibecut-media",
+ "vibecut-project",
+ "vibecut-render",
+ "vibecut-text",
+ "vibecut-vision",
+ "webpki-roots 0.26.11",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "vibecut-mcp"
+version = "0.2.8"
+dependencies = [
+ "serde_json",
+ "tempfile",
+ "vibecut-api",
+ "vibecut-server",
+]
+
+[[package]]
+name = "vibecut-media"
+version = "0.2.8"
+dependencies = [
+ "ffmpeg-the-third",
+ "libc",
+ "log",
+ "resvg",
+ "thiserror 2.0.20",
+ "vibecut-core",
+]
+
+[[package]]
+name = "vibecut-mobile"
+version = "0.2.8"
+dependencies = [
+ "android_logger",
+ "jni-sys 0.3.1",
+ "log",
+ "ndk 0.9.0",
+ "ndk-context",
+ "ndk-sys 0.6.0+11769913",
+ "pollster",
+ "raw-window-handle",
+ "thiserror 2.0.20",
+ "uniffi",
+ "vibecut-core",
+ "vibecut-export",
+ "vibecut-host",
+ "vibecut-media",
+ "vibecut-project",
+ "wgpu",
+]
+
+[[package]]
+name = "vibecut-project"
+version = "0.2.8"
+dependencies = [
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "vibecut-core",
+]
+
+[[package]]
+name = "vibecut-render"
+version = "0.2.8"
+dependencies = [
+ "half",
+ "log",
+ "pollster",
+ "vibecut-core",
+ "vibecut-effects",
+ "vibecut-vision",
+ "wgpu",
+]
+
+[[package]]
+name = "vibecut-server"
+version = "0.2.8"
+dependencies = [
+ "getrandom 0.3.4",
+ "prost",
+ "protox",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tonic-prost",
+ "tonic-prost-build",
+ "vibecut-api",
+]
+
+[[package]]
+name = "vibecut-speech"
+version = "0.2.8"
+dependencies = [
+ "bzip2 0.6.1",
+ "log",
+ "ort",
+ "serde",
+ "serde_json",
+ "sherpa-onnx",
+ "tar",
+ "tokenizers",
+ "ureq 2.12.1",
+ "vibecut-host",
+ "vibecut-media",
+ "vibecut-vision",
+ "whisper-rs",
+]
+
+[[package]]
+name = "vibecut-text"
+version = "0.2.8"
+dependencies = [
+ "fontdb 0.23.0",
+ "memmap2",
+ "rustybuzz",
+ "tiny-skia 0.12.0",
+ "ttf-parser",
+ "unicode-bidi",
+ "unicode-linebreak",
+ "unicode-script",
+]
+
+[[package]]
+name = "vibecut-vision"
+version = "0.2.8"
+dependencies = [
+ "ort",
+ "png 0.17.16",
+ "vibecut-core",
+ "vibecut-project",
+]
 
 [[package]]
 name = "vtable"
