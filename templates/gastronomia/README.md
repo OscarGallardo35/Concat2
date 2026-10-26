@@ -1,6 +1,6 @@
 # Pack gastronómico
 
-Doce plantillas verticales para locales: 1080×1920, 30 fps, entre 7 y 13
+Quince plantillas verticales para locales: 1080×1920, 30 fps, entre 7 y 13
 segundos, pensadas para Reels, Shorts y TikTok. Cada una es un proyecto con
 huecos: el local pone sus fotos y su logo, todo lo demás ya está armado.
 
@@ -18,8 +18,13 @@ huecos: el local pone sus fotos y su logo, todo lo demás ya está armado.
 | `menu-del-mes` | 7 | 12,7 s | Seis fotos + cierre |
 | `eventos-privados` | 3 | 8,2 s | Salón, cumpleaños, empresas |
 | `cierre-de-temporada` | 3 | 7,8 s | Agradecimiento / fin de año |
+| `dia-del-amigo` | 4 | 10,4 s | Salida con amigos, brindis y grupo |
+| `navidad` | 4 | 10,8 s | Cena de Nochebuena, menú de fiesta |
+| `ano-nuevo` | 3 | 8,4 s | Fin de año, últimas mesas |
 
 ![Las tres primeras, frame a frame](../templates-gastronomia.png)
+
+![Las de fechas fuertes](../templates-fechas.png)
 
 *Maqueta generada desde los propios `template.json`: mismas fuentes, tamaños,
 colores y placas. Las fotos son marcadores con el nombre del slot, no un render
@@ -51,7 +56,7 @@ formato que `vibecut.json`— más `assets/` (lo que viaja dentro del diseño) y
 (`Command::FillSlot`) y el clip conserva la posición y el largo que fijó la
 plantilla.
 
-Estas doce no traen `assets/`: no hay música ni imágenes de terceros adentro.
+Estas quince no traen `assets/`: no hay música ni imágenes de terceros adentro.
 Tampoco traen `poster.jpg`, porque el póster es un frame renderizado y este repo
 se generó sin toolchain de render. La galería muestra las tarjetas sin
 miniatura hasta que se genere con un build completo:
