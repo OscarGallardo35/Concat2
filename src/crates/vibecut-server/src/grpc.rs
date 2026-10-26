@@ -38,7 +38,7 @@ pub mod proto {
     tonic::include_proto!("vibecut.v1");
 }
 
-use proto::vibecut_server::{VibeCut, VibeCutServer};
+use proto::vibe_cut_server::{VibeCut, VibeCutServer};
 
 /// The service: the hub, and nothing else.
 struct Service {
@@ -215,7 +215,7 @@ mod tests {
     use super::*;
     use crate::{Config, Server};
     use vibecut_api::{Api, AppDirs};
-    use proto::vibecut_client::VibeCutClient;
+    use proto::vibe_cut_client::VibeCutClient;
 
     fn server(token: Option<&str>) -> (Server, tempfile::TempDir) {
         let scratch = tempfile::tempdir().expect("scratch");
