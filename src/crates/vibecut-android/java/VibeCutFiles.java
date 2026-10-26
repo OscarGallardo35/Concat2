@@ -187,7 +187,7 @@ public class VibeCutFiles extends Fragment {
 
     /**
      * Opens a web address in the browser, or in whichever app claims it -
-     * the launch screen's guides, the repository, the Discord invite. Null
+     * the launch screen's guides, the repository, the release notes. Null
      * when it went, or why it could not. Asked straight rather than through
      * resolveActivity, which from Android 11 answers no for any app the
      * manifest does not name in its queries. From any thread.

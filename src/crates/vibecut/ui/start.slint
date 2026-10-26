@@ -30,7 +30,7 @@ import { SegmentedControl } from "primitives/segmented-control.slint";
 //   one in its folder or forget it, a missing folder shown as missing, and
 //   a search and a sort once there are more than a page of them;
 // - learn and community: the guides, the first edit, the shortcuts, the
-//   repository, the Discord and how to report a problem, as cards that
+// repository and how to report a problem, as cards that
 //   open in the browser, and the version with its release notes.
 //
 // The settings are behind the title strip's gear, as they are in the
@@ -1555,16 +1555,12 @@ global Learn {
         name: "github", glyph: Glyph.github, external: true,
         title: "GitHub", note: I18n.t("start.githubNote"),
     };
-    out property <LearnItem> chat: {
-        name: "discord", glyph: Glyph.discord, external: true,
-        title: "Discord", note: I18n.t("start.discordNote"),
-    };
     out property <LearnItem> report: {
         name: "report", glyph: Glyph.bug, external: true,
         title: I18n.t("start.reportProblem"), note: I18n.t("start.reportProblemNote"),
     };
-    out property <[LearnItem]> desk: [docs, guide, keys, code, chat, report];
-    out property <[LearnItem]> phone: [docs, guide, code, chat, report];
+    out property <[LearnItem]> desk: [docs, guide, keys, code, report];
+    out property <[LearnItem]> phone: [docs, guide, code, report];
 }
 
 // The learn cards as a grid of rows, for the wide page under the projects

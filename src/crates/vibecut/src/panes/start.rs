@@ -99,17 +99,15 @@ pub const REPOSITORY: &str = "https://github.com/OscarGallardo35/VibeCut";
 
 /// Where each of the launch screen's links goes, by the name the screen
 /// sends. One table, so a moved page is one line here. Every address is a
-/// page of the website's own content - src/content/guides in its
-/// repository - or the repository's, and None for a name nobody sends.
-/// "shortcuts" is not here: it opens Settings, not a page.
+/// page of this repository's own content - docs/ - or its issues, and None
+/// for a name nobody sends. "shortcuts" is not here: it opens Settings, not
+/// a page.
 pub fn link(name: &str) -> Option<String> {
     Some(match name {
-        "guides" => format!("{SITE}/guides/"),
-        "first-edit" => format!("{SITE}/guides/first-edit/"),
-        "report" => format!("{SITE}/guides/report-a-problem/"),
+        "guides" => format!("{SITE}/tree/main/docs"),
+        "first-edit" => format!("{SITE}/tree/main/docs"),
+        "report" => format!("{SITE}/issues/new/choose"),
         "github" => REPOSITORY.to_owned(),
-        // The invite the README carries.
-        "discord" => "https://discord.gg/DVuPfpXfqP".to_owned(),
         // The notes for the release this build is, under the tag the
         // release workflow pushes.
         "release-notes" => format!("{REPOSITORY}/releases/tag/v{}", env!("CARGO_PKG_VERSION")),
@@ -641,7 +639,6 @@ mod tests {
             "first-edit",
             "report",
             "github",
-            "discord",
             "release-notes",
         ] {
             assert!(
