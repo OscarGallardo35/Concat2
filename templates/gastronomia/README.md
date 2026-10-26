@@ -30,6 +30,22 @@ huecos: el local pone sus fotos y su logo, todo lo demás ya está armado.
 colores y placas. Las fotos son marcadores con el nombre del slot, no un render
 del motor.*
 
+## Catálogo para mostrar
+
+`templates/gastronomia/index.html` es una página sola, sin JavaScript ni fuentes
+de CDN: se abre desde el disco o se hostea en cualquier lado (para mandarle el
+link a un cliente, o como ficha de la tienda). Se regenera junto con las
+previsualizaciones:
+
+```bash
+python scripts/template-catalog.py
+```
+
+Escribe `previews/<slug>.png` (una tira de frames por plantilla) y la página,
+con los datos leídos de cada `template.json`: nada de números escritos a mano.
+Cada preview lleva el sello **maqueta**, porque las fotos son marcadores y no un
+render del motor.
+
 ## Cómo se instalan
 
 ```bash
