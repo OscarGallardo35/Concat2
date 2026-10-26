@@ -1,4 +1,4 @@
-package org.standalones.concat.spike
+package pro.mercadodigital.vibecut.spike
 
 import android.net.Uri
 import android.os.Bundle
@@ -56,11 +56,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import uniffi.concat_mobile.ClipView
-import uniffi.concat_mobile.Engine
-import uniffi.concat_mobile.Stats
+import uniffi.vibecut_mobile.ClipView
+import uniffi.vibecut_mobile.Engine
+import uniffi.vibecut_mobile.Stats
 
-private const val TAG = "concat-spike-ui"
+private const val TAG = "vibecut-spike-ui"
 
 class MainActivity : ComponentActivity() {
     private lateinit var engine: Engine
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val started = SystemClock.elapsedRealtime()
-        ConcatNative.init(applicationContext)
+        VibeCutNative.init(applicationContext)
         val loaded = SystemClock.elapsedRealtime()
         engine = Engine(filesDir.absolutePath)
         val opened = SystemClock.elapsedRealtime()
@@ -183,7 +183,7 @@ private fun Editor(
                             holder.addCallback(object : SurfaceHolder.Callback {
                                 override fun surfaceCreated(holder: SurfaceHolder) {}
                                 override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-                                    val window = ConcatNative.windowFromSurface(holder.surface)
+                                    val window = VibeCutNative.windowFromSurface(holder.surface)
                                     if (window == 0L) return
                                     val started = SystemClock.elapsedRealtime()
                                     try {
@@ -289,13 +289,13 @@ private suspend fun runBench(engine: Engine) {
     delay(1500)
     val duration = engine.duration()
     if (duration <= 0) {
-        Log.w("concat-spike-bench", "nothing on the timeline")
+        Log.w("vibecut-spike-bench", "nothing on the timeline")
         return
     }
     fun report(label: String) {
         val s = engine.stats()
         Log.i(
-            "concat-spike-bench",
+            "vibecut-spike-bench",
             "$label: renderer='${s.renderer}' frames=${s.frames} scrubs=${s.scrubs} " +
                 "scrub last=${"%.1f".format(s.lastScrubMs)} mean=${"%.1f".format(s.meanScrubMs)} max=${"%.1f".format(s.maxScrubMs)} ms " +
                 "decode=${"%.1f".format(s.lastDecodeMs)} draw=${"%.1f".format(s.lastDrawMs)} ms " +

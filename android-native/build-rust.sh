@@ -3,7 +3,7 @@
 #
 #   android-native/build-rust.sh [release|debug]
 #
-# libconcat_mobile.so goes into app/src/main/jniLibs/arm64-v8a beside the
+# libvibecut_mobile.so goes into app/src/main/jniLibs/arm64-v8a beside the
 # runtime libraries the engine links (libc++_shared, ONNX Runtime), and
 # the UniFFI Kotlin into app/src/main/java/uniffi.
 #
@@ -31,17 +31,17 @@ flags=()
 [ "$profile" = release ] && flags+=(--release)
 cd "$workspace"
 started=$(date +%s)
-cargo ndk -t arm64-v8a --platform 26 build "${flags[@]}" -p concat-mobile
+cargo ndk -t arm64-v8a --platform 26 build "${flags[@]}" -p vibecut-mobile
 echo "cargo ndk took $(( $(date +%s) - started ))s"
 
-so=$CARGO_TARGET_DIR/aarch64-linux-android/$profile/libconcat_mobile.so
+so=$CARGO_TARGET_DIR/aarch64-linux-android/$profile/libvibecut_mobile.so
 libs=$here/app/src/main/jniLibs/arm64-v8a
 mkdir -p "$libs"
 cp "$so" "$libs/"
 # The runtime libraries the Slint APK carries too, where the engine needs
 # them: ask the linker's own record.
 needed=$("$ANDROID_NDK_HOME"/toolchains/llvm/prebuilt/*/bin/llvm-readelf -d "$so" | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p')
-echo "libconcat_mobile.so needs: $(echo $needed)"
+echo "libvibecut_mobile.so needs: $(echo $needed)"
 for lib in $needed; do
   if [ -f "$SHERPA_ONNX_LIB_DIR/$lib" ]; then cp "$SHERPA_ONNX_LIB_DIR/$lib" "$libs/"; fi
 done

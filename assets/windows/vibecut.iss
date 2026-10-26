@@ -1,13 +1,13 @@
-; Concat's Windows installer.
+; VibeCut's Windows installer.
 ;
 ; Built by build-app.yml with Inno Setup from the staged folder the .msi
 ; is also made of, so the two ship the same files; this is the one a
-; person double-clicks, and it puts Concat in the Start menu and can take
+; person double-clicks, and it puts VibeCut in the Start menu and can take
 ; it out again. Everything it needs is handed in on the command line:
 ;
 ;   iscc /DVersion=0.2.8 /DArch=x64compatible /DSuffix=x86_64 ^
-;        /DStage=C:\...\stage\Concat-0.2.8-windows-x86_64 /DOut=C:\...\stage ^
-;        assets\windows\concat.iss
+;        /DStage=C:\...\stage\VibeCut-0.2.8-windows-x86_64 /DOut=C:\...\stage ^
+;        assets\windows\vibecut.iss
 ;
 ; Arch is Inno's own word for the machine: x64compatible for the x86_64
 ; build (which also installs on ARM PCs, under emulation), arm64 for the
@@ -32,23 +32,23 @@
 [Setup]
 ; One id for the life of the product, so an install over an older one is
 ; an upgrade and not a second copy.
-AppId={{7B1E5C3A-3B9E-4F0B-9C6D-2F1D0C0A0C47}
-AppName=Concat
+AppId={{F4CF367E-DBB4-4CBD-881A-39A5D9D9545E}
+AppName=VibeCut
 AppVersion={#Version}
-AppVerName=Concat {#Version}
-AppPublisher=Concat contributors
-AppPublisherURL=https://github.com/jub0t/Concat
-AppSupportURL=https://github.com/jub0t/Concat/issues
-AppUpdatesURL=https://github.com/jub0t/Concat/releases
-DefaultDirName={autopf}\Concat
-DefaultGroupName=Concat
+AppVerName=VibeCut {#Version}
+AppPublisher=VibeCut
+AppPublisherURL=https://github.com/OscarGallardo35/VibeCut
+AppSupportURL=https://github.com/OscarGallardo35/VibeCut/issues
+AppUpdatesURL=https://github.com/OscarGallardo35/VibeCut/releases
+DefaultDirName={autopf}\VibeCut
+DefaultGroupName=VibeCut
 DisableProgramGroupPage=yes
 LicenseFile=..\..\LICENSE
 OutputDir={#Out}
-OutputBaseFilename=Concat-{#Version}-windows-{#Suffix}-setup
-SetupIconFile=..\icons\concat.ico
-UninstallDisplayIcon={app}\concat.ico
-UninstallDisplayName=Concat
+OutputBaseFilename=VibeCut-{#Version}-windows-{#Suffix}-setup
+SetupIconFile=..\icons\vibecut.ico
+UninstallDisplayIcon={app}\vibecut.ico
+UninstallDisplayName=VibeCut
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -105,14 +105,14 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#Stage}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\icons\concat.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\icons\vibecut.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Concat"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"
+Name: "{autoprograms}\VibeCut"; Filename: "{app}\vibecut.exe"; IconFilename: "{app}\vibecut.ico"
 ; The way in when a graphics driver draws the window as coloured squares:
 ; it turns off Settings > General > Draw on the GPU, which that window hides.
-Name: "{autoprograms}\Concat (safe graphics)"; Filename: "{app}\concat.exe"; Parameters: "--software"; IconFilename: "{app}\concat.ico"
-Name: "{autodesktop}\Concat"; Filename: "{app}\concat.exe"; IconFilename: "{app}\concat.ico"; Tasks: desktopicon
+Name: "{autoprograms}\VibeCut (safe graphics)"; Filename: "{app}\vibecut.exe"; Parameters: "--software"; IconFilename: "{app}\vibecut.ico"
+Name: "{autodesktop}\VibeCut"; Filename: "{app}\vibecut.exe"; IconFilename: "{app}\vibecut.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\concat.exe"; Description: "{cm:LaunchProgram,Concat}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\vibecut.exe"; Description: "{cm:LaunchProgram,VibeCut}"; Flags: nowait postinstall skipifsilent

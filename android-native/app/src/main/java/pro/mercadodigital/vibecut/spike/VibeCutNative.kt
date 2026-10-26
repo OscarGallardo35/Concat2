@@ -1,16 +1,16 @@
-package org.standalones.concat.spike
+package pro.mercadodigital.vibecut.spike
 
 import android.content.Context
 import android.view.Surface
 
 /**
- * The two JNI entry points UniFFI cannot carry (src/crates/concat-mobile/src/jni.rs).
+ * The two JNI entry points UniFFI cannot carry (src/crates/vibecut-mobile/src/jni.rs).
  * Loading the library here, through System.loadLibrary, is also what runs it
  * once before JNA opens the same .so for the UniFFI calls.
  */
-object ConcatNative {
+object VibeCutNative {
     init {
-        System.loadLibrary("concat_mobile")
+        System.loadLibrary("vibecut_mobile")
     }
 
     /** Logcat, and the JavaVM + Context that cpal's AAudio host reads. */

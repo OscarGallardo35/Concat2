@@ -6,7 +6,7 @@
 A phone whose kernel uses 16 KB pages - Android 15 and later can, and
 Google Play requires every app to support it - refuses to load a library
 whose LOAD segments are aligned to less. v0.2.8 shipped
-libconcat_android.so at 4 KB beside three 16 KB libraries.
+libvibecut_android.so at 4 KB beside three 16 KB libraries.
 
     scripts/ci/check-16k-pages.py path/to/app.apk
 """
