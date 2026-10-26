@@ -19,6 +19,12 @@ huecos: el local pone sus fotos y su logo, todo lo demás ya está armado.
 | `eventos-privados` | 3 | 8,2 s | Salón, cumpleaños, empresas |
 | `cierre-de-temporada` | 3 | 7,8 s | Agradecimiento / fin de año |
 
+![Las tres primeras, frame a frame](../templates-gastronomia.png)
+
+*Maqueta generada desde los propios `template.json`: mismas fuentes, tamaños,
+colores y placas. Las fotos son marcadores con el nombre del slot, no un render
+del motor.*
+
 ## Cómo se instalan
 
 ```bash
