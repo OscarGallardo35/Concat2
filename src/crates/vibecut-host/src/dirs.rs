@@ -322,7 +322,7 @@ mod tests {
     fn the_former_identifiers_folder_is_adopted() {
         let root = std::env::temp_dir().join(format!("vibecut-adopt-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
-        let former = root.join(FORMER_IDENTIFIER);
+        let former = root.join(FORMER_IDENTIFIERS[0]);
         std::fs::create_dir_all(former.join("voices")).unwrap();
         std::fs::write(former.join("settings.json"), b"{}").unwrap();
         std::fs::write(former.join("voices").join("me.wav"), b"voice").unwrap();
