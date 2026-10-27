@@ -27,7 +27,10 @@ concurrency:
 env:
   # Rutas sin espacios: con el linker GNU, un espacio en la ruta del toolchain,
   # del CARGO_HOME o del árbol parte el argumento y gcc no encuentra el archivo.
-  PATH_EXTRA: "C:/mingw64/bin;C:/ort/bin;C:/ffmpeg-dev/bin"
+  # Con dos puntos y en forma MSYS: bash no separa con ";" y el PATH es
+  # suyo, no del cmd. cargo/rustup viven en $HOME/.cargo/bin, que no
+  # esta en el PATH de la maquina.
+  PATH_EXTRA: "/c/mingw64/bin:/c/ort/bin:/c/ffmpeg-dev/bin"
   RUSTUP_HOME: "C:/rustup"
   CARGO_HOME: "C:/cargo"
   CARGO_TARGET_DIR: "C:/actions-runner-target"
@@ -72,8 +75,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export PATH="$PATH_EXTRA:$PATH"
-          rustup toolchain list
+          export PATH="$PATH_EXTRA:$HOME/.cargo/bin:$PATH"
+          command -v cargo || { echo "cargo no esta en PATH" >&2; exit 1; }
+          cargo --version
+          rustup toolchain list || echo "(rustup no esta en PATH; cargo alcanza)"
           cargo +stable-x86_64-pc-windows-gnu --version
 
       - name: Compile what this machine can compile
@@ -81,7 +86,7 @@ jobs:
         working-directory: src
         run: |
           set -euo pipefail
-          export PATH="$PATH_EXTRA:$PATH"
+          export PATH="$PATH_EXTRA:$HOME/.cargo/bin:$PATH"
           cargo +stable-x86_64-pc-windows-gnu check \
             -p vibecut-core -p vibecut-project -p vibecut-text -p vibecut-effects \
             -p vibecut-render -p vibecut-media -p vibecut-vision -p vibecut-export \
@@ -92,7 +97,7 @@ jobs:
         working-directory: src
         run: |
           set -euo pipefail
-          export PATH="$PATH_EXTRA:$PATH"
+          export PATH="$PATH_EXTRA:$HOME/.cargo/bin:$PATH"
           cargo +stable-x86_64-pc-windows-gnu check -p vibecut-server --features grpc
 
       - name: Tests
@@ -100,7 +105,7 @@ jobs:
         working-directory: src
         run: |
           set -euo pipefail
-          export PATH="$PATH_EXTRA:$PATH"
+          export PATH="$PATH_EXTRA:$HOME/.cargo/bin:$PATH"
           # net::tests::a_real_refused_connection_is_classed_as_refused se salta:
           # en esta máquina Windows rechaza un puerto cerrado en 2,03 s y el test
           # espera 2 s o menos (medido con Python: mismo 2,03 s).
