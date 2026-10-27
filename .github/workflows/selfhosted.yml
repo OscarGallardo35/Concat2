@@ -50,10 +50,15 @@ jobs:
       # el que formateó el árbol (el árbol original, sin tocar, ya da 52
       # diferencias), así que un `fmt --check` acá sería rojo por la versión y
       # no por el código.
+      # `shell: bash` no es decorativo: el shell por defecto de un runner de
+      # Windows es PowerShell, que escribe cada paso en un .ps1 temporal y ahí
+      # la ExecutionPolicy de la máquina lo rechaza (PSSecurityException).
       - name: Every string the interface shows is a key in a locale file
+        shell: bash
         run: python scripts/locales.py --check
 
       - name: The model manifest and the engine's tables agree
+        shell: bash
         run: python scripts/models.py --check
 
   engine:
@@ -114,26 +119,4 @@ jobs:
 
       - name: Every template.json opens and its timeline has no holes
         shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'EOF'
-          import glob, json, sys
-          fails = []
-          for path in sorted(glob.glob("templates/gastronomia/*/template.json")):
-              doc = json.load(open(path, encoding="utf-8"))
-              clips = doc["clips"]
-              pics = sorted([c for c in clips if c["kind"] in ("image", "video")], key=lambda c: c["start"])
-              slots = [m for m in doc["media"] if m.get("placeholder")]
-              if not slots:
-                  fails.append(f"{path}: sin slots")
-              if any(m["path"] for m in slots):
-                  fails.append(f"{path}: un slot tiene path")
-              if abs(pics[0]["start"]) > 1e-6:
-                  fails.append(f"{path}: no arranca en 0")
-              for a, b in zip(pics, pics[1:]):
-                  if abs((a["start"] + a["duration"]) - b["start"]) > 1e-6:
-                      fails.append(f"{path}: hueco entre {a['id']} y {b['id']}")
-          if fails:
-              print("\n".join(fails)); sys.exit(1)
-          print(f"{len(glob.glob('templates/gastronomia/*/template.json'))} plantillas OK")
-          EOF
+        run: python scripts/templates-check.py
