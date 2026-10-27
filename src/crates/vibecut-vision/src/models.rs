@@ -155,6 +155,13 @@ mod tests {
         assert_eq!(files.len(), MODELS.len());
         let names: std::collections::HashSet<_> = MODELS.iter().map(|m| m.id.name()).collect();
         assert_eq!(names.len(), MODELS.len());
-        assert!(!installed(Path::new("/nowhere"), ModelId::Person));
+        // Nada está instalado en una carpeta con nada dentro - salvo los dos
+        // modelos que viajan en el binario, que están instalados por
+        // definición, y que son exactamente los de `bundled`.
+        assert!(installed(Path::new("/nowhere"), ModelId::Person));
+        assert!(installed(Path::new("/nowhere"), ModelId::Enhance));
+        assert!(!installed(Path::new("/nowhere"), ModelId::Object));
+        assert!(!installed(Path::new("/nowhere"), ModelId::BrushEncoder));
+        assert!(!installed(Path::new("/nowhere"), ModelId::BrushDecoder));
     }
 }
