@@ -44,7 +44,7 @@ env:
 jobs:
   checks:
     name: Format, locales and models
-    runs-on: [self-hosted, windows, x64]
+    runs-on: [self-hosted, Windows, X64]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -71,7 +71,7 @@ jobs:
     # dos jobs de arriba (locales, modelos, plantillas) tardan segundos y sí
     # corren solos; este se pide cuando hay algo que verificar de verdad.
     if: github.event_name == 'workflow_dispatch'
-    runs-on: [self-hosted, windows, x64]
+    runs-on: [self-hosted, Windows, X64]
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -138,7 +138,7 @@ jobs:
 
   templates:
     name: The template pack still validates
-    runs-on: [self-hosted, windows, x64]
+    runs-on: [self-hosted, Windows, X64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
