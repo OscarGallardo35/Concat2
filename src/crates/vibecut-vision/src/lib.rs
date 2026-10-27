@@ -45,6 +45,8 @@
 //! are undone.
 
 pub mod apply;
+
+pub mod bundled;
 #[cfg(feature = "infer")]
 pub mod brush;
 pub mod compact;

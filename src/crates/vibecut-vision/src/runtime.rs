@@ -103,8 +103,7 @@ impl Model {
     /// what its older format could, and gave the rest to the CPU: Enhance
     /// ran at 27 seconds a 1080p frame through it, and 1.8 like this.
     pub fn from_file_fixed(path: &std::path::Path, dims: &[(&str, i64)]) -> Result<Model, String> {
-        let bytes = std::fs::read(path)
-            .map_err(|error| format!("could not read {}: {error}", path.display()))?;
+        let bytes = bytes_at(path)?;
         Model::build(&bytes, dims, fixed_accelerators())
     }
 
@@ -140,8 +139,7 @@ impl Model {
 
     /// Loads a model from a file.
     pub fn from_file(path: &std::path::Path) -> Result<Model, String> {
-        let bytes = std::fs::read(path)
-            .map_err(|error| format!("could not read {}: {error}", path.display()))?;
+        let bytes = bytes_at(path)?;
         Model::from_bytes(&bytes)
     }
 
@@ -227,6 +225,31 @@ fn fixed_accelerators() -> Vec<ort::ep::ExecutionProviderDispatch> {
 #[cfg(target_os = "android")]
 fn platform_accelerator() -> Option<ort::ep::ExecutionProviderDispatch> {
     Some(ort::ep::NNAPI::default().build())
+}
+
+/// Los bytes de un modelo: el archivo, o la copia que viaja en el binario
+/// cuando el archivo todavía no está.
+///
+/// Un modelo descargado manda: si está en `<app data>/cutout-models/`, se lee
+/// de ahí aunque el binario traiga otro. Solo cuando el archivo no existe se
+/// cae a [`crate::bundled`], y solo para los dos que se embeben; un modelo que
+/// no está ni en disco ni embebido es el error de siempre, con el mismo texto
+/// que antes para que el mensaje de la interfaz no cambie.
+fn bytes_at(path: &std::path::Path) -> Result<std::borrow::Cow<'static, [u8]>, String> {
+    match std::fs::read(path) {
+        Ok(bytes) => Ok(bytes.into()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            let name = path
+                .file_name()
+                .and_then(|name| name.to_str())
+                .unwrap_or_default();
+            match crate::bundled::get(name) {
+                Some(bytes) => Ok(bytes.into()),
+                None => Err(format!("could not read {}: {error}", path.display())),
+            }
+        }
+        Err(error) => Err(format!("could not read {}: {error}", path.display())),
+    }
 }
 
 // Not DirectML on Windows: the bundle ships Microsoft's CPU build of the

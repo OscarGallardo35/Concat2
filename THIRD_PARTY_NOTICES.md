@@ -205,8 +205,8 @@ which permit shipping them alongside an application that uses them.
 
 ## The cutout models
 
-Remove background runs four models, none of which ship inside the app
-except the first:
+Remove background runs four models. Two of them ship inside the app - the
+first, and the person model - and the other two are downloaded on first use:
 
 - Google's MediaPipe Selfie Segmentation (Apache-2.0), in the ONNX
   conversion published by the ONNX Community
@@ -216,7 +216,11 @@ except the first:
   has been downloaded.
 - Robust Video Matting, the MobileNetV3 variant, by Peter Lin and others
   (https://github.com/PeterL1n/RobustVideoMatting, GPL-3.0), from that
-  repository's releases, downloaded on first use. The person model.
+  repository's releases, **compiled into the `vibecut-vision` crate** so a
+  fresh install has it without downloading anything; the file is
+  `src/crates/vibecut-vision/assets/rvm-mobilenetv3.onnx`, byte for byte the
+  one that repository publishes, and its licence travels with the binary.
+  The person model.
 - IS-Net from "Highly Accurate Dichotomous Image Segmentation" by Qin and
   others (https://github.com/xuebinqin/DIS, Apache-2.0), in the ONNX
   export the rembg project publishes
@@ -226,9 +230,10 @@ except the first:
   export published at https://huggingface.co/Xenova/slimsam-77-uniform
   (Apache-2.0), downloaded on first use. The brushes' model.
 
-Downloaded models live in the app's data directory under `cutout-models`
-and are never bundled; the three that are downloaded come from VibeCut's own
-mirror of the sources named above, described below. They are all run by
+Downloaded models live in the app's data directory under `cutout-models`,
+and the app keeps using the copy that is there even when it also carries one;
+the two that are downloaded come from VibeCut's own mirror of the sources
+named above, described below.
 ONNX Runtime
 (https://github.com/microsoft/onnxruntime, MIT) through the `ort` crate
 (https://github.com/pykeio/ort, MIT OR Apache-2.0), with the platform's
@@ -250,9 +255,16 @@ under - Apache-2.0 for the Kokoro bundles, SlimSAM and IS-Net, CC-BY-4.0
 for Pocket TTS, BSD-3-Clause for Real-ESRGAN, MIT for Chatterbox Turbo and
 the whisper conversions, GPL-3.0 for Robust Video Matting. Those terms are met
 by the attributions above and by the licence files each mirrored archive
-carries; a mirrored file is a verbatim copy, never a modification. Nothing
-in the mirror is bundled with the app, and VibeCut claims no rights over any
-of it.
+carries; a mirrored file is a verbatim copy, never a modification.
+
+Two of the mirrored models also ship inside the binary, because a fresh
+install is the worse moment to ask for 20 MB: Robust Video Matting's person
+model (GPL-3.0) and Real-ESRGAN's general x4 model (BSD-3-Clause), both in
+`src/crates/vibecut-vision/assets/` and compiled in by `include_bytes!`. They
+are the same verbatim files the mirror holds, with the digests
+`models/manifest.toml` records, and the GPL-3.0 of the first travels with the
+binary like the rest of the combined work. The other models in the mirror are
+never bundled with the app, and VibeCut claims no rights over any of them.
 
 ## Effect preview photograph
 

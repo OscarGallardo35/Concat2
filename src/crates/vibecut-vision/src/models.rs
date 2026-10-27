@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2026 Jareer Abdullah and Concat contributors
 
-//! The models that are downloaded rather than compiled in: what they are
-//! called, where they come from, and where they live once fetched.
+//! The models the engine runs: what they are called, where they come from,
+//! and where they live once fetched. Two of them also travel inside the
+//! binary - see [`crate::bundled`] - so a fresh install works without
+//! downloading anything.
 //!
 //! Each is one ONNX file in `<app data>/cutout-models/`, named as the
 //! table says; a file that is there and whole is an installed model, and
@@ -134,8 +136,12 @@ pub fn model_file(data: &Path, id: ModelId) -> PathBuf {
     models_dir(data).join(id.spec().file)
 }
 
-/// Whether a model is on disk and whole.
+/// Whether a model is on disk and whole - or travels inside the binary, in
+/// which case a fresh install has it without downloading anything.
 pub fn installed(data: &Path, id: ModelId) -> bool {
+    if crate::bundled::is_bundled(id.spec().file) {
+        return true;
+    }
     std::fs::metadata(model_file(data, id)).is_ok_and(|meta| meta.is_file() && meta.len() > 0)
 }
 
