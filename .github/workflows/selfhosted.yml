@@ -100,6 +100,22 @@ jobs:
           export PATH="$PATH_EXTRA:$HOME/.cargo/bin:$PATH"
           cargo +stable-x86_64-pc-windows-gnu check -p vibecut-server --features grpc
 
+      # ONNX Runtime y FFmpeg llegan como DLL, y el cargador de Windows las busca
+      # primero junto al .exe. Sin este paso los binarios de test arrancan con
+      # 0xc000007b (imagen inválida): encuentran una DLL de otra arquitectura en
+      # el PATH. Es el equivalente a lo que hace el feature `copy-dylibs` de ort
+      # en un build de MSVC.
+      - name: The runtime DLLs next to the test binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          for dir in "$CARGO_TARGET_DIR/debug" "$CARGO_TARGET_DIR/debug/deps"; do
+            [ -d "$dir" ] || continue
+            cp -f /c/ort/bin/*.dll "$dir/" 2>/dev/null || true
+            cp -f /c/ffmpeg-dev/bin/*.dll "$dir/" 2>/dev/null || true
+          done
+          test -f "$CARGO_TARGET_DIR/debug/deps/onnxruntime.dll"
+
       - name: Tests
         shell: bash
         working-directory: src
