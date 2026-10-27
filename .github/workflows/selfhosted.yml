@@ -66,6 +66,11 @@ jobs:
 
   engine:
     name: Tests and compile
+    # A mano, no en cada push: esta máquina tiene 8 GB y compilar el workspace
+    # en debug se lleva 2-4 GB y todos los núcleos durante varios minutos. Los
+    # dos jobs de arriba (locales, modelos, plantillas) tardan segundos y sí
+    # corren solos; este se pide cuando hay algo que verificar de verdad.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: [self-hosted, windows, x64]
     timeout-minutes: 90
     steps:
