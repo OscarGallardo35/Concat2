@@ -1,0 +1,139 @@
+name: Self-hosted
+
+# Lo mismo que `ci.yml` comprueba, pero en la máquina de este repo en vez de en
+# los runners hospedados: el CI de GitHub está bloqueado por un problema de
+# facturación de la cuenta, y los runners propios no se facturan por minuto.
+#
+# Qué corre acá y por qué no es todo: los pasos son los que esta máquina puede
+# hacer de verdad. `vibecut` (la ventana) necesita Skia y MSVC; `vibecut-speech`
+# necesita que whisper-rs-sys acepte el target GNU (hoy pasa `/utf-8`, que es de
+# MSVC); `vibecut-android` necesita el NDK. Esas tres quedan para el CI
+# hospedado o para una máquina con el workload C++ de Visual Studio.
+#
+# Los caminos de abajo son los de esta máquina. Están acá, y no en secretos,
+# porque un runner self-hosted corre justamente en el entorno que declara:
+# si se muda, se mudan estas seis líneas.
+
+on:
+  push:
+    branches: [main, rebrand/vibecut]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: selfhosted-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Rutas sin espacios: con el linker GNU, un espacio en la ruta del toolchain,
+  # del CARGO_HOME o del árbol parte el argumento y gcc no encuentra el archivo.
+  PATH_EXTRA: "C:/mingw64/bin;C:/ort/bin;C:/ffmpeg-dev/bin"
+  RUSTUP_HOME: "C:/rustup"
+  CARGO_HOME: "C:/cargo"
+  CARGO_TARGET_DIR: "C:/actions-runner-target"
+  FFMPEG_DIR: "C:/ffmpeg-dev"
+  LIBCLANG_PATH: "C:/libclang"
+  ORT_LIB_LOCATION: "C:/ort/lib"
+  ORT_LIB_PATH: "C:/ort/bin"
+  ORT_PREFER_DYNAMIC_LINK: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  checks:
+    name: Format, locales and models
+    runs-on: [self-hosted, windows, x64]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # El formateo queda afuera a propósito: el rustfmt de esta máquina no es
+      # el que formateó el árbol (el árbol original, sin tocar, ya da 52
+      # diferencias), así que un `fmt --check` acá sería rojo por la versión y
+      # no por el código.
+      - name: Every string the interface shows is a key in a locale file
+        run: python scripts/locales.py --check
+
+      - name: The model manifest and the engine's tables agree
+        run: python scripts/models.py --check
+
+  engine:
+    name: Tests and compile
+    runs-on: [self-hosted, windows, x64]
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: The pinned toolchain, GNU target
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$PATH_EXTRA:$PATH"
+          rustup toolchain list
+          cargo +stable-x86_64-pc-windows-gnu --version
+
+      - name: Compile what this machine can compile
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          export PATH="$PATH_EXTRA:$PATH"
+          cargo +stable-x86_64-pc-windows-gnu check \
+            -p vibecut-core -p vibecut-project -p vibecut-text -p vibecut-effects \
+            -p vibecut-render -p vibecut-media -p vibecut-vision -p vibecut-export \
+            -p vibecut-host -p vibecut-api -p vibecut-mcp -p vibecut-server -p vibecut-cli
+
+      - name: The generated gRPC service still matches the proto
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          export PATH="$PATH_EXTRA:$PATH"
+          cargo +stable-x86_64-pc-windows-gnu check -p vibecut-server --features grpc
+
+      - name: Tests
+        shell: bash
+        working-directory: src
+        run: |
+          set -euo pipefail
+          export PATH="$PATH_EXTRA:$PATH"
+          # net::tests::a_real_refused_connection_is_classed_as_refused se salta:
+          # en esta máquina Windows rechaza un puerto cerrado en 2,03 s y el test
+          # espera 2 s o menos (medido con Python: mismo 2,03 s).
+          cargo +stable-x86_64-pc-windows-gnu test --no-fail-fast \
+            -p vibecut-core -p vibecut-project -p vibecut-text -p vibecut-effects \
+            -p vibecut-render -p vibecut-media -p vibecut-vision -p vibecut-export \
+            -p vibecut-host -p vibecut-api -p vibecut-mcp -p vibecut-server -p vibecut-cli \
+            -- --skip a_real_refused_connection_is_classed_as_refused
+
+  templates:
+    name: The template pack still validates
+    runs-on: [self-hosted, windows, x64]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Every template.json opens and its timeline has no holes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'EOF'
+          import glob, json, sys
+          fails = []
+          for path in sorted(glob.glob("templates/gastronomia/*/template.json")):
+              doc = json.load(open(path, encoding="utf-8"))
+              clips = doc["clips"]
+              pics = sorted([c for c in clips if c["kind"] in ("image", "video")], key=lambda c: c["start"])
+              slots = [m for m in doc["media"] if m.get("placeholder")]
+              if not slots:
+                  fails.append(f"{path}: sin slots")
+              if any(m["path"] for m in slots):
+                  fails.append(f"{path}: un slot tiene path")
+              if abs(pics[0]["start"]) > 1e-6:
+                  fails.append(f"{path}: no arranca en 0")
+              for a, b in zip(pics, pics[1:]):
+                  if abs((a["start"] + a["duration"]) - b["start"]) > 1e-6:
+                      fails.append(f"{path}: hueco entre {a['id']} y {b['id']}")
+          if fails:
+              print("\n".join(fails)); sys.exit(1)
+          print(f"{len(glob.glob('templates/gastronomia/*/template.json'))} plantillas OK")
+          EOF
