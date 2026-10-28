@@ -190,6 +190,50 @@ pub fn get(
     }
 }
 
+/// A POST of `body` - already JSON - to `url`, by the same road as [`get`]:
+/// through the proxy when one is configured, directly when the proxy cannot
+/// carry it, and keeping the failure that says more when both fail.
+///
+/// The content type is set here rather than by `prepare`, because a body
+/// that is not JSON is not what this is for.
+pub fn post_json(
+    url: &str,
+    connect: Duration,
+    read: Duration,
+    trust: Trust,
+    prepare: &dyn Fn(ureq::Request) -> ureq::Request,
+    body: &str,
+) -> Result<ureq::Response, Box<Failure>> {
+    let send = |route: Option<&Route>| {
+        prepare(agent(route, connect, read, trust).post(url))
+            .set("content-type", "application/json")
+            .send_string(body)
+            .map_err(|error| {
+                let cause = classify(&error, route.is_some());
+                Box::new(Failure {
+                    error,
+                    cause,
+                    proxy: route.map(|route| route.shown.clone()),
+                })
+            })
+    };
+    let Some(route) = crate::route::for_url(url) else {
+        return send(None);
+    };
+    log::debug!("network: POST {url} through the proxy {}", route.shown);
+    let proxied = match send(Some(&route)) {
+        Ok(response) => return Ok(response),
+        Err(failure) if matches!(failure.error, ureq::Error::Status(..)) => return Err(failure),
+        Err(failure) => failure,
+    };
+    log::info!("network: POST {url} failed through the proxy, trying directly: {proxied}");
+    match send(None) {
+        Ok(response) => Ok(response),
+        Err(direct) if direct.cause.weight() > proxied.cause.weight() => Err(direct),
+        Err(_) => Err(proxied),
+    }
+}
+
 /// An agent with these timeouts, through `route` when there is one.
 fn agent(route: Option<&Route>, connect: Duration, read: Duration, trust: Trust) -> ureq::Agent {
     let tls = match trust {
