@@ -31,7 +31,7 @@
 
 VibeCut to darmowy, otwartoźródłowy edytor wideo i alternatywa dla CapCuta na systemy macOS, Windows, Linux i Android. Robi to, po co ludzie naprawdę otwierają CapCuta: automatyczne napisy, zamianę tekstu na mowę, usuwanie tła, animację na klatkach kluczowych, efekty i napisy tytułowe, montaż na wielu ścieżkach, eksport w 4K. I to bez żadnych haczyków: bez znaku wodnego, bez konta, bez subskrypcji, bez wysyłania plików.
 
-Wszystko działa lokalnie, na natywnym silniku napisanym w Rust, z kompozytorem na GPU. Zainstaluj, wrzuć materiał, tnij. Modele AI do napisów, głosów i wycinania pobierasz raz w Ustawieniach, a potem działają offline. Twój materiał nigdy nie opuszcza dysku.
+Wszystko działa lokalnie, na natywnym silniku napisanym w Rust, z kompozytorem na GPU. Zainstaluj, wrzuć materiał, tnij. Modele AI do napisów, głosów i wycinania pobierasz raz w Ustawieniach, a potem działają offline. Twój materiał nigdy nie opuszcza dysku. Czat AI jest opcjonalny: wysyła tylko tekst do wybranego dostawcy — nigdy Twojego wideo, zdjęć ani dźwięku.
 
 **Nadaje się do:** TikToka, Reels i Shorts, filmów na YouTube, poradników i nagrań ekranu, fragmentów podcastów, memów.
 
@@ -40,7 +40,7 @@ Wszystko działa lokalnie, na natywnym silniku napisanym w Rust, z kompozytorem 
 ## Najważniejsze funkcje
 
 - 🚫 **Bez znaków wodnych. Bez konta. Bez paywalla.** Nigdy.
-- 🔒 **W 100% lokalnie.** Nic nie jest wysyłane. Działa offline.
+- 🔒 **Twoje materiały nigdy nie opuszczają dysku.** Opcjonalny czat AI wysyła tylko tekst.
 - 💬 **Automatyczne napisy.** Lokalny Whisper. Wybierz rozmiar modelu i dostań sformatowane napisy na osi czasu.
 - 🗣️ **Zamiana tekstu na mowę + klonowanie głosu.** Darmowe lokalne głosy albo dowolny głos z kilku sekund nagrania.
 - 🧍 **Usuwanie tła.** Ludzie, obiekty albo maska, którą malujesz sam.

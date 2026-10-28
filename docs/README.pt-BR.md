@@ -31,7 +31,7 @@
 
 O VibeCut é um editor de vídeo gratuito e de código aberto, uma alternativa ao CapCut para macOS, Windows, Linux e Android. Ele cobre aquilo para que as pessoas realmente abrem o CapCut: legendas automáticas, texto para fala, remoção de fundo, animação por keyframes, efeitos e títulos, corte multipista, exportação em 4K. Sem nenhuma pegadinha: sem marca d’água, sem conta, sem assinatura, sem upload.
 
-Tudo roda localmente em um motor nativo em Rust com um compositor na GPU. Instale, solte o material, corte. Os modelos de IA para legendas, vozes e recorte são baixados uma vez nas Configurações e depois funcionam offline. Seu material nunca sai do seu disco.
+Tudo roda localmente em um motor nativo em Rust com um compositor na GPU. Instale, solte o material, corte. Os modelos de IA para legendas, vozes e recorte são baixados uma vez nas Configurações e depois funcionam offline. Seu material nunca sai do seu disco. O chat de IA é opcional: ele envia apenas texto para o provedor que você configurar — nunca seu vídeo, suas imagens ou seu áudio.
 
 **Bom para:** TikTok, Reels e Shorts, vídeos do YouTube, tutoriais e gravações de tela, trechos de podcast, memes.
 
@@ -40,7 +40,7 @@ Tudo roda localmente em um motor nativo em Rust com um compositor na GPU. Instal
 ## Destaques
 
 - 🚫 **Sem marca d’água. Sem conta. Sem paywall.** Nunca.
-- 🔒 **100 % local.** Nada é enviado. Funciona offline.
+- 🔒 **Seu material nunca sai do seu disco.** O chat de IA, opcional, envia só texto.
 - 💬 **Legendas automáticas.** Whisper local. Escolha o tamanho do modelo e receba legendas estilizadas na linha do tempo.
 - 🗣️ **Texto para fala + clonagem de voz.** Vozes locais gratuitas, ou qualquer voz a partir de alguns segundos de gravação.
 - 🧍 **Remoção de fundo.** Pessoas, objetos, ou pinte a máscara você mesmo.

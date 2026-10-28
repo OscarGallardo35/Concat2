@@ -31,7 +31,7 @@
 
 VibeCut est un éditeur vidéo gratuit et open source, une alternative à CapCut pour macOS, Windows, Linux et Android. Il couvre ce pour quoi on ouvre vraiment CapCut : sous-titres automatiques, synthèse vocale, suppression d’arrière-plan, animation par images clés, effets et titres, montage multipiste, export 4K. Sans aucun piège : pas de filigrane, pas de compte, pas d’abonnement, pas d’envoi.
 
-Tout tourne en local sur un moteur natif en Rust avec un compositeur GPU. Installez, déposez vos rushes, montez. Les modèles d’IA pour les sous-titres, les voix et le détourage se téléchargent une fois depuis les Réglages et fonctionnent ensuite hors ligne. Vos rushes ne quittent jamais votre disque.
+Tout tourne en local sur un moteur natif en Rust avec un compositeur GPU. Installez, déposez vos rushes, montez. Les modèles d’IA pour les sous-titres, les voix et le détourage se téléchargent une fois depuis les Réglages et fonctionnent ensuite hors ligne. Vos rushes ne quittent jamais votre disque. Le chat IA est facultatif : il n'envoie que du texte au fournisseur que tu configures — jamais tes vidéos, tes images ni ton audio.
 
 **Idéal pour :** TikTok, Reels et Shorts, vidéos YouTube, tutoriels et enregistrements d’écran, extraits de podcast, mèmes.
 
@@ -40,7 +40,7 @@ Tout tourne en local sur un moteur natif en Rust avec un compositeur GPU. Instal
 ## Points forts
 
 - 🚫 **Pas de filigrane. Pas de compte. Pas de paywall.** Jamais.
-- 🔒 **100 % local.** Rien n’est envoyé. Fonctionne hors ligne.
+- 🔒 **Tes rushes ne quittent jamais ton disque.** Le chat IA, facultatif, n'envoie que du texte.
 - 💬 **Sous-titres automatiques.** Whisper en local. Choisissez une taille de modèle, obtenez des sous-titres stylés sur la timeline.
 - 🗣️ **Synthèse vocale + clonage de voix.** Voix locales gratuites, ou n’importe quelle voix à partir de quelques secondes d’enregistrement.
 - 🧍 **Suppression d’arrière-plan.** Personnes, objets, ou peignez le masque vous-même.

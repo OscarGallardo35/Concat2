@@ -31,7 +31,7 @@
 
 VibeCut ist ein kostenloser, quelloffener Videoeditor und eine CapCut-Alternative für macOS, Windows, Linux und Android. Er kann das, wofür man CapCut tatsächlich öffnet: automatische Untertitel, Text-zu-Sprache, Hintergrundentfernung, Keyframe-Animation, Effekte und Titel, Schnitt auf mehreren Spuren, 4K-Export. Ohne die Haken: kein Wasserzeichen, kein Konto, kein Abo, kein Upload.
 
-Alles läuft lokal auf einer nativen Rust-Engine mit GPU-Compositor. Installieren, Material hineinziehen, schneiden. Die KI-Modelle für Untertitel, Stimmen und Freisteller werden einmal in den Einstellungen geladen und arbeiten danach offline. Dein Material verlässt deine Festplatte nie.
+Alles läuft lokal auf einer nativen Rust-Engine mit GPU-Compositor. Installieren, Material hineinziehen, schneiden. Die KI-Modelle für Untertitel, Stimmen und Freisteller werden einmal in den Einstellungen geladen und arbeiten danach offline. Dein Material verlässt deine Festplatte nie. Der KI-Chat ist optional: Er sendet nur Text an den Anbieter, den du einrichtest – nie dein Video, deine Bilder oder dein Audio.
 
 **Gut für:** TikTok, Reels und Shorts, YouTube-Videos, Tutorials und Bildschirmaufnahmen, Podcast-Clips, Memes.
 
@@ -40,7 +40,7 @@ Alles läuft lokal auf einer nativen Rust-Engine mit GPU-Compositor. Installiere
 ## Highlights
 
 - 🚫 **Keine Wasserzeichen. Kein Konto. Keine Bezahlschranke.** Niemals.
-- 🔒 **100 % lokal.** Nichts wird hochgeladen. Funktioniert offline.
+- 🔒 **Dein Material verlässt nie deine Festplatte.** Der optionale KI-Chat sendet nur Text.
 - 💬 **Automatische Untertitel.** Lokales Whisper. Modellgröße wählen, gestylte Untertitel auf der Zeitleiste bekommen.
 - 🗣️ **Text-zu-Sprache + Stimmklonen.** Kostenlose lokale Stimmen, oder jede Stimme aus ein paar Sekunden Aufnahme.
 - 🧍 **Hintergrundentfernung.** Personen, Objekte, oder die Maske selbst malen.

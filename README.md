@@ -27,9 +27,11 @@
 
 ## About
 
-VibeCut is a free, open-source video editor and a CapCut alternative for macOS, Windows, Linux and Android. It covers what people actually open CapCut for: auto-captions, text-to-speech, background removal, keyframe animation, effects and titles, multi-track cutting, 4K export. With none of the catches: no watermark, no account, no subscription, no upload.
+VibeCut is a free, open-source video editor and a CapCut alternative for macOS, Windows, Linux and Android. It covers what people actually open CapCut for: auto-captions, text-to-speech, background removal, keyframe animation, effects and titles, multi-track cutting, 4K export. With none of the catches: no watermark, no account, no subscription, and your footage is never uploaded.
 
 Everything runs locally on a native Rust engine with a GPU compositor. Install it, drop in footage, cut. The AI models for captions, voices and cutout download once from Settings and work offline after that. Your footage never leaves your disk.
+
+The AI chat is optional: when you use it, it sends your message, the conversation and a summary of your timeline to the provider you configure — never your video, images or audio. With the chat closed, nothing goes out. See [PRIVACY.md](PRIVACY.md).
 
 **Good for:** TikTok, Reels and Shorts, YouTube videos, tutorials and screen recordings, podcast clips, memes.
 
@@ -38,7 +40,7 @@ Everything runs locally on a native Rust engine with a GPU compositor. Install i
 ## Highlights
 
 - 🚫 **No watermarks. No account. No paywall.** Ever.
-- 🔒 **100% local.** Nothing uploads. Works offline.
+- 🔒 **Your footage never leaves your disk.** The optional AI chat sends text only.
 - 💬 **Auto-captions.** Local Whisper. Pick a model size, get styled captions on the timeline.
 - 🗣️ **Text-to-speech + voice cloning.** Free local voices, or any voice from a few seconds of a recording.
 - 🧍 **Background removal.** People, objects, or paint the mask yourself.

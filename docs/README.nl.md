@@ -31,7 +31,7 @@
 
 VibeCut is een gratis, open-source video-editor en een alternatief voor CapCut op macOS, Windows, Linux en Android. Het doet waarvoor mensen CapCut eigenlijk openen: automatische ondertitels, tekst-naar-spraak, achtergrond verwijderen, keyframe-animatie, effecten en titels, monteren op meerdere sporen, exporteren in 4K. En dat zonder addertjes onder het gras: geen watermerk, geen account, geen abonnement, geen upload.
 
-Alles draait lokaal, op een native Rust-engine met een GPU-compositor. Installeren, beeldmateriaal erin slepen, knippen. De AI-modellen voor ondertitels, stemmen en uitsnijden download je één keer via Instellingen, daarna werken ze offline. Je beeldmateriaal verlaat je schijf nooit.
+Alles draait lokaal, op een native Rust-engine met een GPU-compositor. Installeren, beeldmateriaal erin slepen, knippen. De AI-modellen voor ondertitels, stemmen en uitsnijden download je één keer via Instellingen, daarna werken ze offline. Je beeldmateriaal verlaat je schijf nooit. De AI-chat is optioneel: hij stuurt alleen tekst naar de provider die je instelt — nooit je video, afbeeldingen of audio.
 
 **Geschikt voor:** TikTok, Reels en Shorts, YouTube-video’s, tutorials en schermopnames, podcastfragmenten, memes.
 
@@ -40,7 +40,7 @@ Alles draait lokaal, op een native Rust-engine met een GPU-compositor. Installer
 ## Hoogtepunten
 
 - 🚫 **Geen watermerken. Geen account. Geen betaalmuur.** Nooit.
-- 🔒 **100% lokaal.** Er wordt niets geüpload. Werkt offline.
+- 🔒 **Je materiaal verlaat je schijf nooit.** De optionele AI-chat stuurt alleen tekst.
 - 💬 **Automatische ondertitels.** Lokale Whisper. Kies een modelgrootte en je krijgt opgemaakte ondertitels op de tijdlijn.
 - 🗣️ **Tekst-naar-spraak + stemklonen.** Gratis lokale stemmen, of elke stem op basis van een paar seconden opname.
 - 🧍 **Achtergrond verwijderen.** Mensen, objecten, of teken het masker zelf.

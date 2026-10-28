@@ -31,7 +31,7 @@
 
 VibeCut; macOS, Windows, Linux ve Android için ücretsiz, açık kaynaklı bir video düzenleyici ve bir CapCut alternatifidir. İnsanların CapCut’ı gerçekten ne için açtıklarını karşılar: otomatik altyazı, metinden sese, arka plan kaldırma, anahtar kare animasyonu, efektler ve yazılar, çok parçalı kurgu, 4K dışa aktarma. Hiçbir tuzak olmadan: filigran yok, hesap yok, abonelik yok, yükleme yok.
 
-Her şey, GPU birleştiricili yerel bir Rust motorunda yerel olarak çalışır. Kurun, görüntüleri bırakın, kesin. Altyazı, ses ve kesme için yapay zekâ modelleri Ayarlar’dan bir kez indirilir ve sonrasında çevrimdışı çalışır. Görüntüleriniz diskinizden asla çıkmaz.
+Her şey, GPU birleştiricili yerel bir Rust motorunda yerel olarak çalışır. Kurun, görüntüleri bırakın, kesin. Altyazı, ses ve kesme için yapay zekâ modelleri Ayarlar’dan bir kez indirilir ve sonrasında çevrimdışı çalışır. Görüntüleriniz diskinizden asla çıkmaz. Yapay zekâ sohbeti isteğe bağlıdır: yalnızca metni seçtiğiniz sağlayıcıya gönderir — videonuzu, görsellerinizi veya sesinizi asla.
 
 **Şunlar için uygun:** TikTok, Reels ve Shorts, YouTube videoları, eğitimler ve ekran kayıtları, podcast kesitleri, memler.
 
@@ -40,7 +40,7 @@ Her şey, GPU birleştiricili yerel bir Rust motorunda yerel olarak çalışır.
 ## Öne çıkanlar
 
 - 🚫 **Filigran yok. Hesap yok. Ödeme duvarı yok.** Asla.
-- 🔒 **%100 yerel.** Hiçbir şey yüklenmez. Çevrimdışı çalışır.
+- 🔒 **Görüntüleriniz diskınızdan hiç çıkmaz.** İsteğe bağlı yapay zekâ sohbeti yalnızca metin gönderir.
 - 💬 **Otomatik altyazı.** Yerel Whisper. Bir model boyutu seçin, zaman çizelgesinde biçimli altyazılar alın.
 - 🗣️ **Metinden sese + ses klonlama.** Ücretsiz yerel sesler ya da birkaç saniyelik kayıttan herhangi bir ses.
 - 🧍 **Arka plan kaldırma.** İnsanlar, nesneler ya da maskeyi kendiniz boyayın.

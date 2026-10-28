@@ -31,7 +31,7 @@
 
 VibeCut adalah penyunting video gratis dan sumber terbuka, alternatif CapCut untuk macOS, Windows, Linux, dan Android. Ia mencakup hal-hal yang sebenarnya dicari orang saat membuka CapCut: teks otomatis, teks ke suara, penghapusan latar, animasi keyframe, efek dan judul, pemotongan multi-trek, ekspor 4K. Tanpa jebakan apa pun: tanpa tanda air, tanpa akun, tanpa langganan, tanpa unggahan.
 
-Semuanya berjalan lokal di mesin Rust native dengan kompositor GPU. Pasang, jatuhkan rekaman, potong. Model AI untuk teks, suara, dan pemotongan latar diunduh sekali dari Pengaturan dan setelah itu bekerja luring. Rekaman Anda tidak pernah meninggalkan disk Anda.
+Semuanya berjalan lokal di mesin Rust native dengan kompositor GPU. Pasang, jatuhkan rekaman, potong. Model AI untuk teks, suara, dan pemotongan latar diunduh sekali dari Pengaturan dan setelah itu bekerja luring. Rekaman Anda tidak pernah meninggalkan disk Anda. Chat AI bersifat opsional: hanya mengirim teks ke penyedia yang kamu atur — tidak pernah video, gambar, atau audionya.
 
 **Cocok untuk:** TikTok, Reels, dan Shorts, video YouTube, tutorial dan rekaman layar, klip podcast, meme.
 
@@ -40,7 +40,7 @@ Semuanya berjalan lokal di mesin Rust native dengan kompositor GPU. Pasang, jatu
 ## Sorotan
 
 - 🚫 **Tanpa tanda air. Tanpa akun. Tanpa paywall.** Selamanya.
-- 🔒 **100 % lokal.** Tidak ada yang diunggah. Bekerja luring.
+- 🔒 **Materi kamu tidak pernah meninggalkan disk.** Chat AI opsional hanya mengirim teks.
 - 💬 **Teks otomatis.** Whisper lokal. Pilih ukuran model, dapatkan teks bergaya di lini masa.
 - 🗣️ **Teks ke suara + kloning suara.** Suara lokal gratis, atau suara apa pun dari rekaman beberapa detik.
 - 🧍 **Penghapusan latar.** Orang, objek, atau lukis maskernya sendiri.

@@ -31,7 +31,7 @@
 
 VibeCut là trình biên tập video miễn phí, mã nguồn mở và là lựa chọn thay thế CapCut cho macOS, Windows, Linux và Android. Nó làm được những việc mà người ta thực sự mở CapCut để làm: phụ đề tự động, chuyển văn bản thành giọng nói, xóa nền, hoạt ảnh keyframe, hiệu ứng và tiêu đề, cắt nhiều track, xuất 4K. Không có bất kỳ ràng buộc nào: không watermark, không tài khoản, không đăng ký, không tải lên.
 
-Mọi thứ chạy cục bộ trên engine Rust gốc với trình tổng hợp GPU. Cài đặt, kéo thả footage, cắt. Các mô hình AI cho phụ đề, giọng nói và tách nền tải một lần từ Cài đặt và sau đó hoạt động ngoại tuyến. Footage của bạn không bao giờ rời khỏi ổ đĩa của bạn.
+Mọi thứ chạy cục bộ trên engine Rust gốc với trình tổng hợp GPU. Cài đặt, kéo thả footage, cắt. Các mô hình AI cho phụ đề, giọng nói và tách nền tải một lần từ Cài đặt và sau đó hoạt động ngoại tuyến. Footage của bạn không bao giờ rời khỏi ổ đĩa của bạn. Trò chuyện AI là tùy chọn: chỉ gửi văn bản đến nhà cung cấp bạn cấu hình — không bao giờ gửi video, hình ảnh hay âm thanh.
 
 **Phù hợp cho:** TikTok, Reels và Shorts, video YouTube, hướng dẫn và ghi màn hình, trích đoạn podcast, meme.
 
@@ -40,7 +40,7 @@ Mọi thứ chạy cục bộ trên engine Rust gốc với trình tổng hợp 
 ## Điểm nổi bật
 
 - 🚫 **Không watermark. Không tài khoản. Không tường phí.** Mãi mãi.
-- 🔒 **100 % cục bộ.** Không tải lên gì cả. Hoạt động ngoại tuyến.
+- 🔒 **Tư liệu của bạn không bao giờ rời khỏi ổ đĩa.** Trò chuyện AI tùy chọn chỉ gửi văn bản.
 - 💬 **Phụ đề tự động.** Whisper cục bộ. Chọn kích thước mô hình, nhận phụ đề có kiểu dáng trên timeline.
 - 🗣️ **Chuyển văn bản thành giọng nói + nhân bản giọng.** Giọng cục bộ miễn phí, hoặc bất kỳ giọng nào từ vài giây ghi âm.
 - 🧍 **Xóa nền.** Người, vật thể, hoặc tự vẽ mặt nạ.
