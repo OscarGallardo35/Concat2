@@ -29,6 +29,7 @@ pub mod dirs;
 pub mod enhance;
 pub mod export;
 pub mod jobs;
+pub mod keys;
 pub mod lock;
 pub mod logs;
 pub mod machine;
