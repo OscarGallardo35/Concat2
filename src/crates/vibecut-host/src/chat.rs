@@ -639,6 +639,82 @@ fn shortened(text: &str) -> String {
     format!("{cut}...")
 }
 
+/// How many rounds a conversation may take before it is stopped: a model
+/// that keeps asking for tools without ever answering is a loop, and a
+/// panel that waits forever is worse than one that says so.
+pub const STEPS: usize = 6;
+
+/// Runs one exchange to the end: ask, run whatever tools come back, ask
+/// again with their answers, and stop when the assistant speaks or when
+/// [`STEPS`] rounds have gone by.
+///
+/// `run` is what actually touches the editor. It is passed in rather than
+/// called here because the tools live in the MCP crate, above this one:
+/// the host knows how to talk to a provider, not how to cut a timeline.
+pub fn converse<R>(asked: &Ask<'_>, run: R) -> Result<String, String>
+where
+    R: FnMut(&Call) -> Result<String, String>,
+{
+    let provider = asked.provider;
+    let model = asked.model;
+    let key = asked.key;
+    let tools = asked.tools;
+    let max_tokens = asked.max_tokens;
+    converse_with(
+        asked,
+        |conversation| {
+            ask(&Ask {
+                provider,
+                model,
+                key,
+                conversation,
+                tools,
+                max_tokens,
+            })
+        },
+        run,
+    )
+}
+
+/// [`converse`], with the asking itself passed in, so the loop can be
+/// tested without a provider.
+pub fn converse_with<A, R>(
+    asked: &Ask<'_>,
+    mut respond: A,
+    mut run: R,
+) -> Result<String, String>
+where
+    A: FnMut(&Conversation) -> Result<Reply, String>,
+    R: FnMut(&Call) -> Result<String, String>,
+{
+    let mut conversation = asked.conversation.clone();
+    for _ in 0..STEPS {
+        let reply = respond(&conversation)?;
+        if !reply.wants_tools() {
+            return Ok(reply.text);
+        }
+        conversation.turns.push(Turn::Assistant {
+            text: reply.text,
+            calls: reply.calls.clone(),
+        });
+        for call in &reply.calls {
+            // A tool that fails is told to the model, not thrown away: it
+            // can try another way, and the panel shows nothing red.
+            let content = match run(call) {
+                Ok(content) => content,
+                Err(error) => format!("the tool failed: {error}"),
+            };
+            conversation.turns.push(Turn::ToolResult {
+                call_id: call.id.clone(),
+                content,
+            });
+        }
+    }
+    Err(format!(
+        "the assistant asked for tools {STEPS} times without answering"
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -852,5 +928,124 @@ mod tests {
         assert!(cut.chars().count() <= 160);
         assert!(cut.ends_with("..."));
         assert_eq!(shortened("  short   answer "), "short answer");
+    }
+
+    #[test]
+    fn the_loop_runs_what_was_asked_and_answers_with_it() {
+        let asked = Ask {
+            provider: Provider::OpenAi,
+            model: "gpt-4o-mini",
+            key: "sk-x",
+            conversation: &Conversation {
+                system: "You edit video.".into(),
+                turns: vec![Turn::User("how long is the intro?".into())],
+            },
+            tools: &tools(),
+            max_tokens: 512,
+        };
+
+        let mut asked_for = Vec::new();
+        let mut seen: Vec<usize> = Vec::new();
+        let text = converse_with(
+            &asked,
+            |conversation| {
+                seen.push(conversation.turns.len());
+                if conversation.turns.iter().any(|turn| matches!(turn, Turn::ToolResult { .. })) {
+                    Ok(Reply {
+                        text: "The intro is 4 seconds.".into(),
+                        calls: Vec::new(),
+                    })
+                } else {
+                    Ok(Reply {
+                        text: String::new(),
+                        calls: vec![Call {
+                            id: "call_1".into(),
+                            name: "timeline_read".into(),
+                            arguments: json!({ "path": "/tmp/cut" }),
+                        }],
+                    })
+                }
+            },
+            |call| {
+                asked_for.push(call.name.clone());
+                Ok("{\"clips\":[]}".to_owned())
+            },
+        )
+        .expect("an answer");
+
+        assert_eq!(text, "The intro is 4 seconds.");
+        assert_eq!(asked_for, vec!["timeline_read".to_owned()]);
+        // The second round was asked with the call and its result in it.
+        assert_eq!(seen, vec![1, 3]);
+    }
+
+    #[test]
+    fn a_tool_that_fails_is_told_to_the_model() {
+        let asked = Ask {
+            provider: Provider::OpenAi,
+            model: "m",
+            key: "k",
+            conversation: &Conversation::default(),
+            tools: &tools(),
+            max_tokens: 128,
+        };
+        let mut rounds = 0;
+        let text = converse_with(
+            &asked,
+            |conversation| {
+                rounds += 1;
+                if rounds == 1 {
+                    Ok(Reply {
+                        text: String::new(),
+                        calls: vec![Call {
+                            id: "c".into(),
+                            name: "timeline_read".into(),
+                            arguments: json!({}),
+                        }],
+                    })
+                } else {
+                    // The failure has to have reached the model as words.
+                    let said = format!("{conversation:?}");
+                    assert!(said.contains("the tool failed: no project open"), "got {said}");
+                    Ok(Reply { text: "I could not read it.".into(), calls: Vec::new() })
+                }
+            },
+            |_call| Err("no project open".to_owned()),
+        )
+        .expect("an answer");
+        assert_eq!(text, "I could not read it.");
+    }
+
+    #[test]
+    fn a_model_that_never_answers_is_stopped() {
+        let asked = Ask {
+            provider: Provider::OpenAi,
+            model: "m",
+            key: "k",
+            conversation: &Conversation::default(),
+            tools: &tools(),
+            max_tokens: 128,
+        };
+        let mut calls = 0;
+        let stopped = converse_with(
+            &asked,
+            |_| {
+                Ok(Reply {
+                    text: String::new(),
+                    calls: vec![Call {
+                        id: "c".into(),
+                        name: "timeline_read".into(),
+                        arguments: json!({}),
+                    }],
+                })
+            },
+            |_call| {
+                calls += 1;
+                Ok("{}".to_owned())
+            },
+        );
+        assert!(stopped.is_err(), "the loop has to end");
+        // Six rounds, which is the limit, not one more.
+        assert_eq!(calls, STEPS);
     }
 }
