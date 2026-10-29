@@ -16,6 +16,8 @@
 //! reads one, both pure, both tested against a fixture of each protocol.
 //! The sending is [`crate::net::post_json`].
 
+use std::time::Duration;
+
 use serde_json::{json, Map, Value};
 
 /// Who answers, and how they are reached.
@@ -471,6 +473,172 @@ fn decode_anthropic(body: &Value) -> Result<Reply, String> {
     Ok(Reply { text, calls })
 }
 
+/// How long to wait for the provider to answer at all.
+const CONNECT: Duration = Duration::from_secs(20);
+/// How long to wait between reads: a model may think before the first word.
+const READ: Duration = Duration::from_secs(120);
+
+/// Everything one question needs: who answers, with which key, about what.
+pub struct Ask<'a> {
+    /// Who answers.
+    pub provider: Provider,
+    /// Which of its models.
+    pub model: &'a str,
+    /// The key, unsealed, held only for the length of this call.
+    pub key: &'a str,
+    /// What has been said so far, and what the assistant is told it is.
+    pub conversation: &'a Conversation,
+    /// What it may call. Empty means a plain conversation.
+    pub tools: &'a [ToolSpec],
+    /// How long an answer may run.
+    pub max_tokens: u32,
+}
+
+/// Asks, and waits for the whole answer.
+///
+/// Used whenever the assistant may call a tool: a call arrives split across
+/// events when streamed, and a chat that edits a timeline is worth more
+/// than one that types itself out.
+pub fn ask(asked: &Ask<'_>) -> Result<Reply, String> {
+    let response = post(asked, false)?;
+    let body = response
+        .into_string()
+        .map_err(|error| format!("the answer could not be read: {error}"))?;
+    let value: Value = serde_json::from_str(&body)
+        .map_err(|_| format!("the provider did not answer with JSON: {}", shortened(&body)))?;
+    decode(asked.provider, &value)
+}
+
+/// Asks, and hands each piece of the answer to `on_text` as it arrives.
+///
+/// Tools are not streamed here: this is the path a plain conversation
+/// takes, where the first words showing up at once is the whole point.
+pub fn ask_streaming(asked: &Ask<'_>, on_text: &mut dyn FnMut(&str)) -> Result<Reply, String> {
+    let response = post(asked, true)?;
+    let reader = std::io::BufReader::new(response.into_reader());
+    let mut text = String::new();
+    for line in std::io::BufRead::lines(reader) {
+        let line = line.map_err(|error| format!("the stream stopped early: {error}"))?;
+        let Some(payload) = sse_payload(&line) else {
+            continue;
+        };
+        if payload == "[DONE]" {
+            break;
+        }
+        let Ok(value) = serde_json::from_str::<Value>(payload) else {
+            continue;
+        };
+        if let Some(said) = delta_text(asked.provider.protocol(), &value) {
+            text.push_str(&said);
+            on_text(&said);
+        }
+    }
+    Ok(Reply {
+        text,
+        calls: Vec::new(),
+    })
+}
+
+/// The request itself: encode, authenticate, send.
+fn post(asked: &Ask<'_>, stream: bool) -> Result<ureq::Response, String> {
+    let mut body = encode(
+        asked.provider,
+        asked.model,
+        asked.conversation,
+        asked.tools,
+        asked.max_tokens,
+    );
+    if stream {
+        body["stream"] = json!(true);
+    }
+    let headers = asked.provider.headers(asked.key);
+    crate::net::post_json(
+        &asked.provider.endpoint(),
+        CONNECT,
+        READ,
+        crate::net::Trust::Shipped,
+        &|request| {
+            let mut request = request;
+            for (name, value) in &headers {
+                request = request.set(name, value);
+            }
+            request
+        },
+        &body.to_string(),
+    )
+    .map_err(refusal)
+}
+
+/// What to say when there is no answer: the provider's own words when it
+/// sent some, and the network's explanation otherwise.
+fn refusal(failure: Box<crate::net::Failure>) -> String {
+    let said = failure.to_string();
+    let error = match *failure {
+        crate::net::Failure { error, .. } => error,
+    };
+    match error {
+        // A status carries the body, and these providers explain a 401 in
+        // it: "Incorrect API key provided" beats "the server answered 401".
+        ureq::Error::Status(code, response) => {
+            let body = response.into_string().unwrap_or_default();
+            match serde_json::from_str::<Value>(&body)
+                .ok()
+                .and_then(|value| error_message(&value))
+            {
+                Some(message) => message,
+                None if body.trim().is_empty() => format!("the provider answered {code}"),
+                None => format!("the provider answered {code}: {}", shortened(&body)),
+            }
+        }
+        _ => said,
+    }
+}
+
+/// The JSON of a `data:` line of a server-sent event stream, when the line
+/// is one. Comments, blanks and the other fields are not.
+fn sse_payload(line: &str) -> Option<&str> {
+    let rest = line.trim_end().strip_prefix("data:")?;
+    let rest = rest.strip_prefix(' ').unwrap_or(rest);
+    if rest.is_empty() {
+        None
+    } else {
+        Some(rest)
+    }
+}
+
+/// The text a streamed event carries, in either protocol.
+fn delta_text(protocol: Protocol, value: &Value) -> Option<String> {
+    match protocol {
+        Protocol::OpenAi => value
+            .get("choices")?
+            .get(0)?
+            .get("delta")?
+            .get("content")?
+            .as_str()
+            .map(str::to_owned),
+        Protocol::Anthropic => {
+            if value.get("type")?.as_str()? != "content_block_delta" {
+                return None;
+            }
+            value
+                .get("delta")?
+                .get("text")?
+                .as_str()
+                .map(str::to_owned)
+        }
+    }
+}
+
+/// `text` cut to something that fits in an error line.
+fn shortened(text: &str) -> String {
+    let flat = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    if flat.chars().count() <= 160 {
+        return flat;
+    }
+    let cut: String = flat.chars().take(157).collect();
+    format!("{cut}...")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -648,5 +816,41 @@ mod tests {
             assert_eq!(Provider::from_id(provider.id()), Some(provider));
         }
         assert_eq!(Provider::from_id("gemini"), None);
+    }
+
+    #[test]
+    fn only_data_lines_carry_an_event() {
+        assert_eq!(sse_payload("data: {\"a\":1}"), Some("{\"a\":1}"));
+        assert_eq!(sse_payload("data:{\"a\":1}"), Some("{\"a\":1}"));
+        assert_eq!(sse_payload("data: [DONE]"), Some("[DONE]"));
+        assert_eq!(sse_payload("event: ping"), None);
+        assert_eq!(sse_payload(": keep-alive"), None);
+        assert_eq!(sse_payload(""), None);
+    }
+
+    #[test]
+    fn a_streamed_delta_is_read_in_both_protocols() {
+        let openai = json!({ "choices": [{ "delta": { "content": "Hel" } }] });
+        assert_eq!(delta_text(Protocol::OpenAi, &openai).as_deref(), Some("Hel"));
+        // The first event of an OpenAI stream carries a role and no text.
+        let role_only = json!({ "choices": [{ "delta": { "role": "assistant" } }] });
+        assert_eq!(delta_text(Protocol::OpenAi, &role_only), None);
+
+        let claude = json!({
+            "type": "content_block_delta",
+            "delta": { "type": "text_delta", "text": "lo" }
+        });
+        assert_eq!(delta_text(Protocol::Anthropic, &claude).as_deref(), Some("lo"));
+        let ping = json!({ "type": "ping" });
+        assert_eq!(delta_text(Protocol::Anthropic, &ping), None);
+    }
+
+    #[test]
+    fn a_long_answer_is_cut_for_an_error_line() {
+        let long = "x".repeat(400);
+        let cut = shortened(&long);
+        assert!(cut.chars().count() <= 160);
+        assert!(cut.ends_with("..."));
+        assert_eq!(shortened("  short   answer "), "short answer");
     }
 }
