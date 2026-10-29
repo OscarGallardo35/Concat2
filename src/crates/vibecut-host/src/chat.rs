@@ -97,11 +97,15 @@ impl Provider {
 
     /// The model the pane starts with: the cheap one of each house, because
     /// a first message should not cost what a flagship does.
+    ///
+    /// Verified against each provider's own pricing page in October 2026:
+    /// Haiku 3.5 is retired and `deepseek-chat` is a legacy name served by
+    /// `deepseek-flash`, so the obvious strings are both wrong.
     pub fn default_model(self) -> &'static str {
         match self {
             Provider::OpenAi => "gpt-4o-mini",
-            Provider::Anthropic => "claude-3-5-haiku-latest",
-            Provider::DeepSeek => "deepseek-chat",
+            Provider::Anthropic => "claude-haiku-4-5",
+            Provider::DeepSeek => "deepseek-flash",
             Provider::OpenRouter => "openai/gpt-4o-mini",
         }
     }
