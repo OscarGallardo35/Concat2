@@ -143,6 +143,48 @@ pub struct ToolSpec {
     pub schema: Value,
 }
 
+/// How many pictures one message may carry.
+///
+/// Six is enough to show a shot, its neighbours and where the cut lands;
+/// more explains nothing and multiplies the bill, because a picture is not
+/// free: at 1,024 px it is about 1,334 tokens, and Claude charges $1 per
+/// million of those.
+pub const MAX_IMAGES: usize = 6;
+
+/// A picture the person attached, already encoded: the frame a
+/// `preview_frame` call returned, or a still they dropped in.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Image {
+    /// `image/png` or `image/jpeg`, as the provider expects it spelled.
+    pub media_type: String,
+    /// The bytes, base64, without a data-URL prefix.
+    pub base64: String,
+}
+
+impl Image {
+    /// The picture as a data URL, which is how OpenAI takes one inline.
+    pub fn data_url(&self) -> String {
+        format!("data:{};base64,{}", self.media_type, self.base64)
+    }
+
+    /// The picture in a tool result: `preview_frame` answers with a block
+    /// shaped `{ "type": "image", "data": ..., "mimeType": ... }`, and
+    /// this is how it becomes one the model can be shown.
+    pub fn from_mcp_block(block: &Value) -> Option<Image> {
+        if block.get("type")?.as_str()? != "image" {
+            return None;
+        }
+        Some(Image {
+            media_type: block
+                .get("mimeType")
+                .and_then(Value::as_str)
+                .unwrap_or("image/png")
+                .to_owned(),
+            base64: block.get("data")?.as_str()?.to_owned(),
+        })
+    }
+}
+
 /// One thing the assistant asked to call.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Call {
@@ -157,11 +199,14 @@ pub struct Call {
 /// A conversation, from the point of view of either protocol.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Turn {
-    /// Something the person said.
-    User(
+    /// Something the person said, and what they showed with it.
+    User {
         /// The message, as typed.
-        String,
-    ),
+        text: String,
+        /// The pictures they attached, at most [`MAX_IMAGES`] of which
+        /// are sent.
+        images: Vec<Image>,
+    },
     /// What the assistant said, and what it asked to call along the way.
     Assistant {
         /// Its words: empty when it only asked for tools.
@@ -233,7 +278,27 @@ fn encode_openai(
     }
     for turn in &conversation.turns {
         match turn {
-            Turn::User(text) => messages.push(json!({ "role": "user", "content": text })),
+            Turn::User { text, images } => {
+                if images.is_empty() {
+                    messages.push(json!({ "role": "user", "content": text }));
+                } else {
+                    // With a picture, OpenAI wants the content as blocks;
+                    // "low" detail is a fixed, small number of tokens and
+                    // enough to see a frame. An empty text block is not
+                    // sent: it is tokens paid for nothing.
+                    let mut blocks = Vec::with_capacity(images.len() + 1);
+                    if !text.is_empty() {
+                        blocks.push(json!({ "type": "text", "text": text }));
+                    }
+                    for image in images.iter().take(MAX_IMAGES) {
+                        blocks.push(json!({
+                            "type": "image_url",
+                            "image_url": { "url": image.data_url(), "detail": "low" },
+                        }));
+                    }
+                    messages.push(json!({ "role": "user", "content": blocks }));
+                }
+            }
             Turn::Assistant { text, calls } => {
                 let mut message = Map::new();
                 message.insert("role".into(), json!("assistant"));
@@ -306,10 +371,27 @@ fn encode_anthropic(
     let mut messages: Vec<Value> = Vec::with_capacity(conversation.turns.len());
     for turn in &conversation.turns {
         match turn {
-            Turn::User(text) => messages.push(json!({
-                "role": "user",
-                "content": [{ "type": "text", "text": text }],
-            })),
+            Turn::User { text, images } => {
+                let mut blocks = Vec::with_capacity(images.len() + 1);
+                if !text.is_empty() {
+                    blocks.push(json!({ "type": "text", "text": text }));
+                }
+                for image in images.iter().take(MAX_IMAGES) {
+                    blocks.push(json!({
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": image.media_type,
+                            "data": image.base64,
+                        },
+                    }));
+                }
+                // An empty content array is refused outright.
+                if blocks.is_empty() {
+                    blocks.push(json!({ "type": "text", "text": "" }));
+                }
+                messages.push(json!({ "role": "user", "content": blocks }));
+            }
             Turn::Assistant { text, calls } => {
                 let mut blocks = Vec::with_capacity(calls.len() + 1);
                 if !text.is_empty() {
@@ -735,7 +817,10 @@ mod tests {
         Conversation {
             system: "You edit video.".into(),
             turns: vec![
-                Turn::User("make the intro shorter".into()),
+                Turn::User {
+                    text: "make the intro shorter".into(),
+                    images: Vec::new(),
+                },
                 Turn::Assistant {
                     text: String::new(),
                     calls: vec![Call {
@@ -942,7 +1027,10 @@ mod tests {
             key: "sk-x",
             conversation: &Conversation {
                 system: "You edit video.".into(),
-                turns: vec![Turn::User("how long is the intro?".into())],
+                turns: vec![Turn::User {
+                    text: "how long is the intro?".into(),
+                    images: Vec::new(),
+                }],
             },
             tools: &tools(),
             max_tokens: 512,
@@ -1051,5 +1139,96 @@ mod tests {
         assert!(stopped.is_err(), "the loop has to end");
         // Six rounds, which is the limit, not one more.
         assert_eq!(calls, STEPS);
+    }
+
+    #[test]
+    fn a_picture_is_a_data_url_for_openai() {
+        let said = Conversation {
+            system: String::new(),
+            turns: vec![Turn::User {
+                text: "where does this cut?".into(),
+                images: vec![Image {
+                    media_type: "image/png".into(),
+                    base64: "QUJD".into(),
+                }],
+            }],
+        };
+        let body = encode(Provider::OpenAi, "gpt-4o-mini", &said, &[], 256);
+        assert_eq!(body["messages"][0]["content"][0]["type"], "text");
+        assert_eq!(body["messages"][0]["content"][1]["type"], "image_url");
+        assert_eq!(
+            body["messages"][0]["content"][1]["image_url"]["url"],
+            "data:image/png;base64,QUJD"
+        );
+        assert_eq!(body["messages"][0]["content"][1]["image_url"]["detail"], "low");
+    }
+
+    #[test]
+    fn a_picture_is_a_base64_source_for_anthropic() {
+        let said = Conversation {
+            system: String::new(),
+            turns: vec![Turn::User {
+                text: "where does this cut?".into(),
+                images: vec![Image {
+                    media_type: "image/png".into(),
+                    base64: "QUJD".into(),
+                }],
+            }],
+        };
+        let body = encode(Provider::Anthropic, "claude-haiku-4-5", &said, &[], 256);
+        let block = &body["messages"][0]["content"][1];
+        assert_eq!(block["type"], "image");
+        assert_eq!(block["source"]["type"], "base64");
+        assert_eq!(block["source"]["media_type"], "image/png");
+        assert_eq!(block["source"]["data"], "QUJD");
+    }
+
+    #[test]
+    fn no_more_than_six_pictures_go_out() {
+        let many = (0..10)
+            .map(|n| Image {
+                media_type: "image/png".into(),
+                base64: format!("img{n}"),
+            })
+            .collect();
+        let said = Conversation {
+            system: String::new(),
+            turns: vec![Turn::User {
+                text: String::new(),
+                images: many,
+            }],
+        };
+        let openai = encode(Provider::OpenAi, "m", &said, &[], 64);
+        assert_eq!(openai["messages"][0]["content"].as_array().unwrap().len(), MAX_IMAGES);
+        // No text and pictures: just the pictures, with no empty text
+        // block paid for.
+        let claude = encode(Provider::Anthropic, "m", &said, &[], 64);
+        let blocks = claude["messages"][0]["content"].as_array().unwrap();
+        assert_eq!(blocks.len(), MAX_IMAGES);
+        assert_eq!(blocks[0]["type"], "image");
+
+        // A turn with neither still goes out as something: an empty
+        // content array is refused outright.
+        let empty = Conversation {
+            system: String::new(),
+            turns: vec![Turn::User {
+                text: String::new(),
+                images: Vec::new(),
+            }],
+        };
+        let claude = encode(Provider::Anthropic, "m", &empty, &[], 64);
+        assert_eq!(claude["messages"][0]["content"][0]["type"], "text");
+    }
+
+    #[test]
+    fn a_frame_from_a_tool_becomes_a_picture() {
+        // The shape preview_frame answers with, verbatim.
+        let block = json!({ "type": "image", "data": "iVBORw0KGgo=", "mimeType": "image/png" });
+        let image = Image::from_mcp_block(&block).expect("a picture");
+        assert_eq!(image.media_type, "image/png");
+        assert_eq!(image.base64, "iVBORw0KGgo=");
+        assert_eq!(image.data_url(), "data:image/png;base64,iVBORw0KGgo=");
+        // Anything else is not one.
+        assert!(Image::from_mcp_block(&json!({ "type": "text", "text": "hi" })).is_none());
     }
 }
