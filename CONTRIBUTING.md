@@ -1,18 +1,18 @@
-# Contributing to Concat
+# Contributing to VibeCut
 
-Thanks for being here. Concat is a video editor that runs entirely on the
+Thanks for being here. VibeCut is a video editor that runs entirely on the
 user's machine, and it gets better mostly through people using it hard and
 reporting what broke.
 
 ## The most valuable thing you can do
 
-Grab a build from the [Releases](https://github.com/jub0t/Concat/releases) page
+Grab a build from the [Releases](https://github.com/OscarGallardo35/VibeCut/releases) page
 and edit a real video with it. Real footage finds what no reading of the
 source does. A good bug report (what you did, what happened, your
 OS, the media you used) is worth more than most patches.
 
 Longer-form discussion lives in
-[the contribution discussion](https://github.com/jub0t/Concat/discussions/3)
+[the contribution discussion](https://github.com/OscarGallardo35/VibeCut/discussions/3)
 and on [Discord](https://discord.gg/DVuPfpXfqP).
 
 ## Before you write code
@@ -29,7 +29,7 @@ You will need Rust (see `rust-version` in `src/Cargo.toml`), the FFmpeg
 Windows and Linux), cmake and a C++ compiler. Then:
 
 ```sh
-cd src && cargo run -p concat
+cd src && cargo run -p vibecut
 ```
 
 That is the editor window. Everything - the engine, the host layer and the
@@ -39,7 +39,7 @@ Slint UI - is one Cargo workspace under `src/`.
 
 | Path | What lives there |
 |---|---|
-| `src/crates/` | The engine (core, media, render, effects, export, project), the host layer (`concat-host`, `concat-speech`), the API (`concat-api`, `concat-server`), the CLI, and `concat`, the Slint editor window |
+| `src/crates/` | The engine (core, media, render, effects, export, project), the host layer (`vibecut-host`, `vibecut-speech`), the API (`vibecut-api`, `vibecut-server`), the CLI, and `vibecut`, the Slint editor window |
 
 [`src/README.md`](src/README.md) explains how the crates fit together and
 where the sharp edges are. Read it before touching the engine.
@@ -66,24 +66,20 @@ downloads from.
 
 Write what happens through the `log` facade (`log::info!`, `log::warn!`,
 `log::error!`) rather than to standard output or standard error. Every run
-writes `<app data>/logs/concat-<when>.log`, and a packaged build has no
-terminal for anything that goes anywhere else; `CONCAT_LOG=debug` turns the
-level up. See `src/crates/concat-host/src/logs.rs`.
+writes `<app data>/logs/vibecut-<when>.log`, and a packaged build has no
+terminal for anything that goes anywhere else; `VIBECUT_LOG=debug` turns the
+level up. See `src/crates/vibecut-host/src/logs.rs`.
 
 New source files need a licence header (see below). Match the style of the code
 around you; the engine avoids cleverness on purpose.
 
 ## Licensing your contribution
 
-Concat is **AGPL-3.0-or-later** ([`LICENSE`](LICENSE)).
+VibeCut is **AGPL-3.0-or-later** ([`LICENSE`](LICENSE)). There is no separate
+contributor agreement: by opening a pull request you agree to license your
+contribution under the same terms, and you keep the copyright in your own work.
 
-Contributions are accepted under the agreement in [`CLA.md`](CLA.md). **You
-assign the copyright in your contribution to Concat's owner**, and get a
-licence back to use your own work for anything, plus a promise that it always
-stays open source. Copyright in one place is what makes the AGPL enforceable
-against companies that take the code without honouring it.
-
-Sign off your commits to indicate agreement:
+Sign off your commits to indicate that:
 
 ```sh
 git commit -s -m "your message"
@@ -100,7 +96,11 @@ Every source file starts with:
 // SPDX-FileCopyrightText: 2026 Jareer Abdullah and Concat contributors
 ```
 
-Use this header as it is, and don't add a copyright line of your own.
+Use this header as it is in a file that came from Concat, and don't add a
+copyright line of your own: the line records who wrote the code that is there,
+and it is part of the licence it arrived under. A file you create from scratch
+carries the same two lines, with the second naming you or your project; do not
+paste the upstream line onto code that is not theirs.
 
 ### Third-party code
 
@@ -111,7 +111,7 @@ catch before a merge than after a release.
 
 ## Trademarks
 
-The code is free to fork. The Concat name and logo are not covered by the AGPL
+The code is free to fork. The VibeCut name and logo are not covered by the AGPL
 grant; see [`TRADEMARK.md`](TRADEMARK.md). Forks are welcome; please ship them
 under your own name.
 

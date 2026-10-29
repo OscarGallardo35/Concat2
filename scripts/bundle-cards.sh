@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # SPDX-FileCopyrightText: 2026 Jareer Abdullah and Concat contributors
 #
-# Copies the effect cards a run of Concat drew on a real GPU into
-# src/crates/concat/cards/, one <package id>.jpg each, which the binary
+# Copies the effect cards a run of VibeCut drew on a real GPU into
+# src/crates/vibecut/cards/, one <package id>.jpg each, which the binary
 # carries: what a shelf shows until a machine has drawn its own (#416).
 #
 # Run the app once on the build being bundled, let the Effects, Filters
@@ -12,11 +12,11 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
-out="$root/src/crates/concat/cards"
+out="$root/src/crates/vibecut/cards"
 case "$(uname -s)" in
-  Darwin) default="$HOME/Library/Application Support/org.standalones.concat/cards" ;;
-  Linux) default="${XDG_DATA_HOME:-$HOME/.local/share}/org.standalones.concat/cards" ;;
-  *) default="${LOCALAPPDATA:-}/org.standalones.concat/cards" ;;
+  Darwin) default="$HOME/Library/Application Support/pro.mercadodigital.vibecut/cards" ;;
+  Linux) default="${XDG_DATA_HOME:-$HOME/.local/share}/pro.mercadodigital.vibecut/cards" ;;
+  *) default="${LOCALAPPDATA:-}/pro.mercadodigital.vibecut/cards" ;;
 esac
 from="${1:-$default}"
 [ -d "$from" ] || { echo "no card folder at $from" >&2; exit 1; }
@@ -29,7 +29,7 @@ for card in "$from"/*-????????????????.jpg; do
   name="$(basename "$card")"
   id="${name%-*}"
   # Only the built-ins: a user's own package has no folder here.
-  [ -d "$root/src/crates/concat-effects/packages/$id" ] || continue
+  [ -d "$root/src/crates/vibecut-effects/packages/$id" ] || continue
   cp "$card" "$out/$id.jpg"
   count=$((count + 1))
 done

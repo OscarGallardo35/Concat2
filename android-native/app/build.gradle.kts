@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "org.standalones.concat.spike"
+    namespace = "pro.mercadodigital.vibecut.spike"
     compileSdk = 35
     // The NDK the engine is built with; AGP strips the .so's symbols with it.
     ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        // Never org.standalones.concat: this installs beside the shipping app.
-        applicationId = "org.standalones.concat.spike"
+        // Never pro.mercadodigital.vibecut: this installs beside the shipping app.
+        applicationId = "pro.mercadodigital.vibecut.spike"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

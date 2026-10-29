@@ -2,10 +2,10 @@
 # The build environment for a phone, as shell exports:
 #
 #   eval "$(scripts/mobile-env.sh aarch64-linux-android)"
-#   cargo ndk -t arm64-v8a --platform 26 build -p concat-android
+#   cargo ndk -t arm64-v8a --platform 26 build -p vibecut-android
 #
 #   eval "$(scripts/mobile-env.sh aarch64-apple-ios)"
-#   cargo build -p concat --target aarch64-apple-ios
+#   cargo build -p vibecut --target aarch64-apple-ios
 #
 # It names what the two fetch scripts left in vendor/ - FFmpeg through
 # FFMPEG_DIR, sherpa-onnx through SHERPA_ONNX_LIB_DIR - and on Android the
@@ -64,7 +64,7 @@ case "$target" in
     #
     # Every library the APK carries is linked for 16 KB pages, as FFmpeg's
     # already is (ffmpeg-mobile.sh): a phone whose kernel uses them refuses
-    # a library aligned to 4 KB, and v0.2.8's libconcat_android.so was.
+    # a library aligned to 4 KB, and v0.2.8's libvibecut_android.so was.
     # One RUSTFLAGS for both: cargo reads it whole and ignores the
     # target's own flags when it is set.
     rustflags='-C link-arg=-Wl,-z,max-page-size=16384'
